@@ -1,6 +1,6 @@
 # Grand Teleport (NeoForge Port)
 
-![Grand Teleport Preview](preview.jpg)
+![Grand Teleport Preview](preview.gif)
 
 ## English
 
