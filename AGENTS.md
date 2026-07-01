@@ -58,7 +58,7 @@ c:/Users/user/Desktop/dev/mod Grand Teleport Neoforge portage/
   - Fichier `neoforge.mods.toml` configuré avec le Mod ID `gtalike_teleport` et les crédits.
   - Classe principale `GtaLikeTeleport.java` implémentée.
   - Classe `GtaLikeTeleportConfig.java` portée et compatible avec l'API NeoForge `FMLPaths`.
-  - Fichier `README.md` créé pour créditer hookuru_ et Codex.
+  - Fichier `README.md` créé pour créditer hookuru_.
   - Compilation Java validée avec succès.
 - **Étape 2 : Le Payload Réseau (Network)**
   - Implémentation de `StartServerTeleportPayload`, `ServerTeleportAckPayload` et `BypassNextServerTeleportPayload` sous forme de records et StreamCodecs.
