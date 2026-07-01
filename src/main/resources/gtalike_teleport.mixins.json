@@ -1,0 +1,24 @@
+{
+  "required": true,
+  "package": "dev.codex.gtaliketeleport.mixin",
+  "plugin": "dev.codex.gtaliketeleport.mixin.GtaLikeTeleportMixinPlugin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "ServerPlayerMixin",
+    "WaystonesWarpPlateBlockEntityMixin"
+  ],
+  "client": [
+    "CameraAccessor",
+    "CameraMixin",
+    "ClientPacketListenerMixin",
+    "ConnectionMixin",
+    "EntityRendererMixin",
+    "JourneyMapClientNetworkDispatcherMixin",
+    "LevelRendererMixin",
+    "MinecraftMixin",
+    "MouseHandlerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
