@@ -35,7 +35,7 @@ When a player teleports (via `/tp`, `/teleport`, or other supported means), the 
 ### Credits and License
 
 * **Original Author**: hookuru_ (original mod supervision, code, assets).
-* **NeoForge Port**: [cfrsh](https://github.com/f65q4fffs) (vibe coded).
+* **NeoForge Port**: [cfrsh](https://github.com/f65q4fffs).
 * **Code License**: This port is distributed under the **MIT License**, in accordance with the original project.
 * **Audio License**: Bundled custom sound effects are edited audio assets from ZapSplat under a paid Premium plan. They may not be extracted, redistributed, sold, or reused separately. See [LICENSE](./LICENSE) for details.
 
@@ -74,6 +74,6 @@ Lorsque le joueur se téléporte (via `/tp`, `/teleport` ou d'autres moyens supp
 ### Crédits et Licence
 
 * **Auteur Original** : hookuru_ (code original, supervision, assets).
-* **Portage NeoForge** : [cfrsh](https://github.com/f65q4fffs) (vibe coded).
+* **Portage NeoForge** : [cfrsh](https://github.com/f65q4fffs).
 * **Licence du code** : Ce portage est distribué sous la licence **MIT**, conformément au projet original.
 * **Licence audio** : Les effets sonores personnalisés inclus sont des assets édités à partir de sons licenciés depuis ZapSplat sous un plan Premium. Ils ne peuvent pas être extraits, redistribués, vendus ou réutilisés séparément. Voir [LICENSE](./LICENSE) pour les détails.
