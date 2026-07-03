@@ -204,7 +204,7 @@ def publishChangelog = publishChangelogFile.exists()
 
 modrinth {
     token = System.getenv('MODRINTH_TOKEN')
-    projectId = 'TON_ID_MODRINTH_ICI'
+    projectId = 'grandteleport-neoforge' // https://modrinth.com/user/f65q4fffs — créer le projet si absent
     versionNumber = "${project.version}"
     versionName = "${mod_name} ${project.version} (NeoForge ${minecraft_version})"
     versionType = releaseType
@@ -217,8 +217,8 @@ modrinth {
 tasks.register('curseforge', net.darkhax.curseforgegradle.TaskPublishCurseForge) {
     apiToken = System.getenv('CURSEFORGE_TOKEN')
 
-    // CurseForge requiert un ID numerique (visible dans l'URL du projet ou via l'API).
-    def mainFile = upload('1234567', jar) // TODO: remplacer 1234567 par votre ID CurseForge
+    // https://www.curseforge.com/minecraft/mc-mods/grandteleport-neoforge
+    def mainFile = upload('1594881', jar)
     mainFile.changelog = publishChangelog
     mainFile.changelogType = 'markdown'
     mainFile.releaseType = releaseType
