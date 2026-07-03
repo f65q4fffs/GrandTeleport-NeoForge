@@ -1,0 +1,57 @@
+{
+  "teleport.camera_in": {
+    "sounds": [
+      "gtalike_teleport:teleport/camera_in"
+    ]
+  },
+  "teleport.camera_out": {
+    "sounds": [
+      "gtalike_teleport:teleport/camera_out"
+    ]
+  },
+  "teleport.teleport": {
+    "sounds": [
+      "gtalike_teleport:teleport/teleport"
+    ]
+  },
+  "teleport.zoom_in_long": {
+    "sounds": [
+      "gtalike_teleport:teleport/zoom_in_long"
+    ]
+  },
+  "teleport.zoom_in_short": {
+    "sounds": [
+      "gtalike_teleport:teleport/zoom_in_short"
+    ]
+  },
+  "teleport.zoom_out_long": {
+    "sounds": [
+      "gtalike_teleport:teleport/zoom_out_long"
+    ]
+  },
+  "teleport.zoom_out_short": {
+    "sounds": [
+      "gtalike_teleport:teleport/zoom_out_short"
+    ]
+  },
+  "teleport.gta5_dezoom": {
+    "sounds": [
+      { "name": "gtalike_teleport:teleport/gta5_dezoom", "stream": false }
+    ]
+  },
+  "teleport.gta5_wind": {
+    "sounds": [
+      { "name": "gtalike_teleport:teleport/gta5_wind", "stream": false }
+    ]
+  },
+  "teleport.gta5_zoom": {
+    "sounds": [
+      { "name": "gtalike_teleport:teleport/gta5_zoom", "stream": false }
+    ]
+  },
+  "teleport.gta5_landing": {
+    "sounds": [
+      { "name": "gtalike_teleport:teleport/gta5_landing", "stream": false }
+    ]
+  }
+}

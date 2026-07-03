@@ -1,5 +1,6 @@
 package dev.codex.gtaliketeleport;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
@@ -23,6 +24,59 @@ public final class TeleportStepEffectRenderer {
     public static void render(GuiGraphics context, float tickProgress) {
         updateStartMaskColorCapture();
 
+        Minecraft client = Minecraft.getInstance();
+
+        float frameTick = TeleportTransitionController.ticks + tickProgress;
+        float exposureIntensity = 0.0F;
+        float colorGradeStrength = 0.0F;
+
+        TeleportTransitionController.CameraFrame frame = TeleportTransitionController.getCameraFrame(tickProgress);
+        if (frame != null && TeleportTransitionController.startFeet != null) {
+            float altitude = (float) (frame.pos().y - Math.min(TeleportTransitionController.startFeet.y,
+                    TeleportTransitionController.actualTargetFeet != null ? TeleportTransitionController.actualTargetFeet.y : TeleportTransitionController.startFeet.y));
+            colorGradeStrength = Mth.clamp((altitude - 10.0F) / 110.0F, 0.0F, 1.0F);
+
+            float baseExposure = Mth.clamp((altitude - 15.0F) / 120.0F, 0.0F, 0.5F);
+
+            float plungeBloom = 0.0F;
+            float pushStart = TeleportTransitionController.getPushMotionStartTick();
+            float enterHold = TeleportTransitionController.getEnterHoldStartTick();
+            if (frameTick >= pushStart && frameTick <= enterHold) {
+                float plungeProgress = (frameTick - pushStart) / Math.max(1.0F, enterHold - pushStart);
+                plungeBloom = plungeProgress * 0.9F;
+            } else if (frameTick > enterHold && frameTick <= enterHold + 12) {
+                plungeBloom = (1.0F - (frameTick - enterHold) / 12.0F) * 0.9F;
+            }
+
+            float stepPulse = TeleportTransitionController.getStepEffectIntensity(tickProgress);
+            exposureIntensity = Mth.clamp(baseExposure + plungeBloom + stepPulse, 0.0F, 1.0F);
+        }
+
+        // 2. Mettre à jour les uniformes du shader s'il est actif
+        boolean shaderActive = false;
+        if (client.gameRenderer != null) {
+            net.minecraft.client.renderer.PostChain postChain = ((dev.codex.gtaliketeleport.mixin.GameRendererAccessor) client.gameRenderer).gtalikeTeleport$getPostEffect();
+            if (postChain != null) {
+                shaderActive = true;
+                TeleportTransitionController.updateShaderUniforms(client, exposureIntensity, colorGradeStrength);
+            }
+        }
+
+        // 3. Fallback en Java si le shader n'est pas actif (Sodium/Iris, erreur de compilation)
+        if (!shaderActive) {
+            if (colorGradeStrength > 0.01F) {
+                // Filtre vert-olive militaire
+                int tintAlpha = (int) (24.0F * colorGradeStrength);
+                int tintColor = argb(tintAlpha, 45, 60, 20);
+                context.fill(0, 0, context.guiWidth(), context.guiHeight(), tintColor);
+            }
+            if (exposureIntensity > 0.001F) {
+                // Bloom d'exposition additif
+                renderFallbackBloom(context, exposureIntensity);
+            }
+        }
+
+        // 4. Rendu des masques et flashs de transition par défaut
         boolean shaderScreenMaskOnly = TeleportTransitionController.shouldUseShaderScreenMaskOnly();
         float maskIntensity = TeleportTransitionController.getShaderScreenMaskIntensity(tickProgress);
         if (maskIntensity > 0.0F) {
@@ -37,6 +91,20 @@ public final class TeleportStepEffectRenderer {
             intensity = Math.max(intensity, TeleportTransitionController.getHudFadeOverlayIntensity(tickProgress));
         }
         renderStepFlash(context, intensity);
+    }
+
+    private static void renderFallbackBloom(GuiGraphics context, float exposureIntensity) {
+        com.mojang.blaze3d.systems.RenderSystem.enableBlend();
+        com.mojang.blaze3d.systems.RenderSystem.blendFunc(
+                com.mojang.blaze3d.platform.GlStateManager.SourceFactor.SRC_ALPHA,
+                com.mojang.blaze3d.platform.GlStateManager.DestFactor.ONE
+        );
+
+        int alpha = (int) (140.0F * exposureIntensity);
+        int bloomColor = argb(alpha, 255, 255, 245);
+        context.fill(0, 0, context.guiWidth(), context.guiHeight(), bloomColor);
+
+        com.mojang.blaze3d.systems.RenderSystem.defaultBlendFunc();
     }
 
     private static void renderStepFlash(GuiGraphics context, float intensity) {

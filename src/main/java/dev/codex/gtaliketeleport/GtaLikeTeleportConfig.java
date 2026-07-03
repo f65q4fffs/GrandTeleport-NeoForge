@@ -56,8 +56,29 @@ public final class GtaLikeTeleportConfig {
     private static final String CONFIG_LAYOUT_BASE_HEIGHT_KEY = "configLayoutBaseHeight";
     private static final String CONFIG_WIDGET_PREFIX = "configWidget.";
     private static final String CONFIG_TEXT_PREFIX = "configText.";
+    private static final String TRANSITION_PRESET_KEY = "transitionPreset";
+    private static final String SOUND_PACK_KEY = "soundPack";
+    private static final String ENABLE_SHUTTER_FLASH_KEY = "enableShutterFlash";
+    private static final String ENABLE_VIGNETTE_KEY = "enableVignette";
+    private static final String ENABLE_INTERFERENCE_LINES_KEY = "enableInterferenceLines";
+    private static final String FADE_COLOR_KEY = "fadeColor";
+    private static final String ENABLE_VANILLA_TP_KEY = "enableVanillaTp";
+    private static final String ENABLE_WAYSTONES_KEY = "enableWaystones";
+    private static final String ENABLE_JOURNEYMAP_KEY = "enableJourneyMap";
+    private static final String ENABLE_PORTALS_KEY = "enablePortals";
     private static final String DEFAULT_CONFIG_PROPERTIES = """
+configVersion=2
 bodyCameraHeight=6.0
+transitionPreset=classic
+soundPack=default
+enableShutterFlash=true
+enableVignette=true
+enableInterferenceLines=true
+fadeColor=black
+enableVanillaTp=true
+enableWaystones=true
+enableJourneyMap=true
+enablePortals=true
 bodyGlideHeight=0.5
 bodyGlideTicks=10
 configLayoutAspectLocked=false
@@ -545,6 +566,16 @@ zoomStageGlideTicks=13
     private static boolean configLayoutGridEnabled = true;
     private static boolean configLayoutSnapEnabled = true;
     private static boolean configLayoutCustom = false;
+    private static String transitionPreset = "classic";
+    private static String soundPack = "default";
+    private static boolean enableShutterFlash = true;
+    private static boolean enableVignette = true;
+    private static boolean enableInterferenceLines = true;
+    private static String fadeColor = "black";
+    private static boolean enableVanillaTp = true;
+    private static boolean enableWaystones = true;
+    private static boolean enableJourneyMap = true;
+    private static boolean enablePortals = true;
     private static double configLayoutX = 0.0D;
     private static double configLayoutY = 0.0D;
     private static double configLayoutWidth = 0.0D;
@@ -570,7 +601,16 @@ zoomStageGlideTicks=13
         Properties properties = new Properties();
         try (InputStream input = Files.newInputStream(configPath)) {
             properties.load(input);
-            rewriteConfig = prepareLoadedProperties(properties);
+            int version = 0;
+            try {
+                version = Integer.parseInt(properties.getProperty("configVersion", "0"));
+            } catch (NumberFormatException ignored) {}
+            if (version < 2) {
+                restoreDefaultLayoutProperties(properties);
+                properties.setProperty("configVersion", "2");
+                rewriteConfig = true;
+            }
+            rewriteConfig = prepareLoadedProperties(properties) || rewriteConfig;
             applyConfigProperties(properties);
             rewriteConfig = rewriteConfig || !properties.containsKey(CONFIG_LAYOUT_EDITOR_BUTTON_VISIBLE_KEY);
         } catch (IOException ignored) {
@@ -588,6 +628,135 @@ zoomStageGlideTicks=13
     public static boolean setEffectEnabled(boolean enabled) {
         effectEnabled = enabled;
         return save();
+    }
+
+    public static String getTransitionPreset() {
+        return transitionPreset;
+    }
+
+    public static boolean setTransitionPreset(String preset) {
+        applyPreset(preset);
+        return true;
+    }
+
+    public static String getSoundPack() {
+        return soundPack;
+    }
+
+    public static boolean setSoundPack(String pack) {
+        soundPack = pack;
+        return save();
+    }
+
+    public static boolean isShutterFlashEnabled() {
+        return enableShutterFlash;
+    }
+
+    public static boolean setShutterFlashEnabled(boolean enabled) {
+        enableShutterFlash = enabled;
+        return save();
+    }
+
+    public static boolean isVignetteEnabled() {
+        return enableVignette;
+    }
+
+    public static boolean setVignetteEnabled(boolean enabled) {
+        enableVignette = enabled;
+        return save();
+    }
+
+    public static boolean isInterferenceLinesEnabled() {
+        return enableInterferenceLines;
+    }
+
+    public static boolean setInterferenceLinesEnabled(boolean enabled) {
+        enableInterferenceLines = enabled;
+        return save();
+    }
+
+    public static String getFadeColor() {
+        return fadeColor;
+    }
+
+    public static boolean setFadeColor(String color) {
+        fadeColor = color;
+        return save();
+    }
+
+    public static boolean isVanillaTpEnabled() {
+        return enableVanillaTp;
+    }
+
+    public static boolean setVanillaTpEnabled(boolean enabled) {
+        enableVanillaTp = enabled;
+        return save();
+    }
+
+    public static boolean isWaystonesEnabled() {
+        return enableWaystones;
+    }
+
+    public static boolean setWaystonesEnabled(boolean enabled) {
+        enableWaystones = enabled;
+        return save();
+    }
+
+    public static boolean isJourneyMapEnabled() {
+        return enableJourneyMap;
+    }
+
+    public static boolean setJourneyMapEnabled(boolean enabled) {
+        enableJourneyMap = enabled;
+        return save();
+    }
+
+    public static boolean isPortalsEnabled() {
+        return enablePortals;
+    }
+
+    public static boolean setPortalsEnabled(boolean enabled) {
+        enablePortals = enabled;
+        return save();
+    }
+
+    public static void applyPreset(String preset) {
+        transitionPreset = preset;
+        if ("fast".equals(preset)) {
+            zoomOutStageTicks = new int[]{5, 5, 5};
+            zoomInStageTicks = new int[]{5, 5, 5};
+            zoomStageGlideTicks = 5;
+            bodyGlideTicks = 5;
+            zoomOutStageHeights = new double[]{20, 50, 100};
+            zoomInStageHeights = new double[]{20, 50, 100};
+            netherZoomOutStageHeights = new double[]{20, 50, 100};
+            netherZoomInStageHeights = new double[]{20, 50, 100};
+            endZoomOutStageHeights = new double[]{20, 50, 100};
+            endZoomInStageHeights = new double[]{20, 50, 100};
+        } else if ("slow".equals(preset)) {
+            zoomOutStageTicks = new int[]{25, 25, 25};
+            zoomInStageTicks = new int[]{25, 25, 25};
+            zoomStageGlideTicks = 30;
+            bodyGlideTicks = 20;
+            zoomOutStageHeights = new double[]{50, 120, 250};
+            zoomInStageHeights = new double[]{50, 120, 250};
+            netherZoomOutStageHeights = new double[]{40, 80, 120};
+            netherZoomInStageHeights = new double[]{40, 80, 120};
+            endZoomOutStageHeights = new double[]{50, 120, 250};
+            endZoomInStageHeights = new double[]{50, 120, 250};
+        } else {
+            zoomOutStageTicks = DEFAULT_STAGE_TICKS.clone();
+            zoomInStageTicks = DEFAULT_STAGE_TICKS.clone();
+            zoomStageGlideTicks = DEFAULT_ZOOM_STAGE_GLIDE_TICKS;
+            bodyGlideTicks = DEFAULT_BODY_GLIDE_TICKS;
+            zoomOutStageHeights = DEFAULT_STAGE_HEIGHTS.clone();
+            zoomInStageHeights = DEFAULT_STAGE_HEIGHTS.clone();
+            netherZoomOutStageHeights = DEFAULT_STAGE_HEIGHTS.clone();
+            netherZoomInStageHeights = DEFAULT_STAGE_HEIGHTS.clone();
+            endZoomOutStageHeights = DEFAULT_STAGE_HEIGHTS.clone();
+            endZoomInStageHeights = DEFAULT_STAGE_HEIGHTS.clone();
+        }
+        save();
     }
 
     public static boolean isPlayerFreezeEnabled() {
@@ -1217,6 +1386,16 @@ zoomStageGlideTicks=13
         configLayoutHeight = readUnitDouble(properties, CONFIG_LAYOUT_HEIGHT_KEY, configLayoutHeight);
         configLayoutBaseWidth = readPositiveInt(properties, CONFIG_LAYOUT_BASE_WIDTH_KEY, configLayoutBaseWidth);
         configLayoutBaseHeight = readPositiveInt(properties, CONFIG_LAYOUT_BASE_HEIGHT_KEY, configLayoutBaseHeight);
+        transitionPreset = properties.getProperty(TRANSITION_PRESET_KEY, transitionPreset);
+        soundPack = properties.getProperty(SOUND_PACK_KEY, soundPack);
+        enableShutterFlash = Boolean.parseBoolean(properties.getProperty(ENABLE_SHUTTER_FLASH_KEY, Boolean.toString(enableShutterFlash)));
+        enableVignette = Boolean.parseBoolean(properties.getProperty(ENABLE_VIGNETTE_KEY, Boolean.toString(enableVignette)));
+        enableInterferenceLines = Boolean.parseBoolean(properties.getProperty(ENABLE_INTERFERENCE_LINES_KEY, Boolean.toString(enableInterferenceLines)));
+        fadeColor = properties.getProperty(FADE_COLOR_KEY, fadeColor);
+        enableVanillaTp = Boolean.parseBoolean(properties.getProperty(ENABLE_VANILLA_TP_KEY, Boolean.toString(enableVanillaTp)));
+        enableWaystones = Boolean.parseBoolean(properties.getProperty(ENABLE_WAYSTONES_KEY, Boolean.toString(enableWaystones)));
+        enableJourneyMap = Boolean.parseBoolean(properties.getProperty(ENABLE_JOURNEYMAP_KEY, Boolean.toString(enableJourneyMap)));
+        enablePortals = Boolean.parseBoolean(properties.getProperty(ENABLE_PORTALS_KEY, Boolean.toString(enablePortals)));
         readWidgetLayouts(properties);
         readConfigTexts(properties);
     }
@@ -1418,11 +1597,22 @@ zoomStageGlideTicks=13
         properties.setProperty(WARP_PLATE_TRANSITIONS_ENABLED_KEY, Boolean.toString(warpPlateTransitionsEnabled));
         properties.setProperty(EXTERNAL_TELEPORT_TRANSITIONS_ENABLED_KEY, Boolean.toString(externalTeleportTransitionsEnabled));
         properties.setProperty(FALLBACK_CHUNK_FADE_ENABLED_KEY, Boolean.toString(fallbackChunkFadeEnabled));
+        properties.setProperty(TRANSITION_PRESET_KEY, transitionPreset);
+        properties.setProperty(SOUND_PACK_KEY, soundPack);
+        properties.setProperty(ENABLE_SHUTTER_FLASH_KEY, Boolean.toString(enableShutterFlash));
+        properties.setProperty(ENABLE_VIGNETTE_KEY, Boolean.toString(enableVignette));
+        properties.setProperty(ENABLE_INTERFERENCE_LINES_KEY, Boolean.toString(enableInterferenceLines));
+        properties.setProperty(FADE_COLOR_KEY, fadeColor);
+        properties.setProperty(ENABLE_VANILLA_TP_KEY, Boolean.toString(enableVanillaTp));
+        properties.setProperty(ENABLE_WAYSTONES_KEY, Boolean.toString(enableWaystones));
+        properties.setProperty(ENABLE_JOURNEYMAP_KEY, Boolean.toString(enableJourneyMap));
+        properties.setProperty(ENABLE_PORTALS_KEY, Boolean.toString(enablePortals));
         properties.setProperty(CONFIG_LAYOUT_EDITOR_BUTTON_VISIBLE_KEY, Boolean.toString(configLayoutEditorButtonVisible));
         properties.setProperty(CONFIG_LAYOUT_DEBUG_ENABLED_KEY, Boolean.toString(configLayoutDebugEnabled));
         properties.setProperty(CONFIG_LAYOUT_ASPECT_LOCKED_KEY, Boolean.toString(configLayoutAspectLocked));
         properties.setProperty(CONFIG_LAYOUT_GRID_ENABLED_KEY, Boolean.toString(configLayoutGridEnabled));
         properties.setProperty(CONFIG_LAYOUT_SNAP_ENABLED_KEY, Boolean.toString(configLayoutSnapEnabled));
+        properties.setProperty("configVersion", "2");
         properties.setProperty(CONFIG_LAYOUT_CUSTOM_KEY, Boolean.toString(configLayoutCustom));
         properties.setProperty(CONFIG_LAYOUT_X_KEY, Double.toString(configLayoutX));
         properties.setProperty(CONFIG_LAYOUT_Y_KEY, Double.toString(configLayoutY));
@@ -1481,12 +1671,12 @@ zoomStageGlideTicks=13
         return dimension == null ? ZoomDimension.OVERWORLD : dimension;
     }
 
-    enum ZoomDimension {
+    public enum ZoomDimension {
         OVERWORLD,
         NETHER,
         END;
 
-        static ZoomDimension fromLevel(ResourceKey<Level> dimension) {
+        public static ZoomDimension fromLevel(ResourceKey<Level> dimension) {
             if (Level.NETHER.equals(dimension)) {
                 return NETHER;
             }

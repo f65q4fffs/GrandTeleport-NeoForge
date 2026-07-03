@@ -58,11 +58,11 @@ public final class TeleportTransitionController {
     private static final int MINECRAFT_BODY_SOUND_LAYERS = 3;
 
     private static Runnable pendingAction;
-    private static Vec3 startFeet;
+    static Vec3 startFeet;
     private static Vec3 startEye;
     private static Vec3 plannedTargetFeet;
     private static boolean plannedTargetFeetStable = true;
-    private static Vec3 actualTargetFeet;
+    static Vec3 actualTargetFeet;
     private static Vec3 arrivalCameraFeet;
     private static Vec3 lastObservedPlayerFeet;
     private static Vec3 enterBodyTargetEye;
@@ -73,7 +73,7 @@ public final class TeleportTransitionController {
     private static boolean previousSmartCull;
     private static float startYaw;
     private static float startPitch;
-    private static int ticks;
+    static int ticks;
     private static int travelTicks = DEFAULT_TRAVEL_TICKS;
     private static int totalTicks = getFixedTotalTicks() + DEFAULT_TRAVEL_TICKS;
     private static boolean commandSent;
@@ -175,6 +175,14 @@ public final class TeleportTransitionController {
         client.smartCull = false;
         client.levelRenderer.needsUpdate();
         SodiumCompat.beginTransition(client, isFallbackTerrainMode());
+
+        if (client.gameRenderer != null) {
+            try {
+                client.gameRenderer.loadEffect(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("gtalike_teleport", "satellite_camera"));
+            } catch (Exception e) {
+                // Ignore loader issues
+            }
+        }
     }
 
     public static void tick(Minecraft client) {
@@ -1013,6 +1021,16 @@ public final class TeleportTransitionController {
     }
 
     private static SoundEvent getCustomStepSound(int tick) {
+        if ("gta".equals(GtaLikeTeleportConfig.getSoundPack())) {
+            if (tick == getEnterHoldStartTick()) {
+                return TeleportSounds.GTA5_LANDING;
+            }
+            if (tick == getPushStageTick(1) || tick == getPushStageTick(2)) {
+                return TeleportSounds.GTA5_ZOOM;
+            }
+            return TeleportSounds.GTA5_DEZOOM;
+        }
+
         if (tick == getPullStageTick(2)) {
             return TeleportSounds.ZOOM_OUT_LONG;
         }
@@ -1214,11 +1232,11 @@ public final class TeleportTransitionController {
         return skipTravel ? getPullEndTick() : getTravelStartTick();
     }
 
-    private static int getPushMotionStartTick() {
+    static int getPushMotionStartTick() {
         return skipTravel ? getPushStartTick() : getTravelEndTick();
     }
 
-    private static int getEnterHoldStartTick() {
+    static int getEnterHoldStartTick() {
         return getPushStartTick() + getPushTicks();
     }
 
@@ -1354,6 +1372,10 @@ public final class TeleportTransitionController {
         stopCustomTravelSound(client);
         client.options.hideGui = previousHudHidden;
 
+        if (client.gameRenderer != null) {
+            client.gameRenderer.shutdownEffect();
+        }
+
         pendingAction = null;
         startFeet = null;
         startEye = null;
@@ -1395,7 +1417,7 @@ public final class TeleportTransitionController {
         private int fadeTicksRemaining;
 
         private FadingTravelSound(float volume) {
-            super(TeleportSounds.TELEPORT, SoundSource.PLAYERS, SoundInstance.createUnseededRandom());
+            super("gta".equals(GtaLikeTeleportConfig.getSoundPack()) ? TeleportSounds.GTA5_WIND : TeleportSounds.TELEPORT, SoundSource.PLAYERS, SoundInstance.createUnseededRandom());
             this.baseVolume = volume;
             this.volume = volume;
             this.pitch = 1.0F;
@@ -1427,6 +1449,30 @@ public final class TeleportTransitionController {
     }
 
     public record CameraFrame(Vec3 pos, float yaw, float pitch) {
+    }
+
+    public static void updateShaderUniforms(Minecraft client, float exposureIntensity, float colorGradeStrength) {
+        net.minecraft.client.renderer.PostChain postChain = ((dev.codex.gtaliketeleport.mixin.GameRendererAccessor) client.gameRenderer).gtalikeTeleport$getPostEffect();
+        if (postChain == null) {
+            return;
+        }
+
+        try {
+            java.util.List<net.minecraft.client.renderer.PostPass> passes = ((dev.codex.gtaliketeleport.mixin.PostChainAccessor) postChain).gtalikeTeleport$getPasses();
+            for (net.minecraft.client.renderer.PostPass pass : passes) {
+                net.minecraft.client.renderer.EffectInstance effect = ((dev.codex.gtaliketeleport.mixin.PostPassAccessor) pass).gtalikeTeleport$getEffect();
+                if (effect != null) {
+                    if (effect.safeGetUniform("ExposureIntensity") != null) {
+                        effect.safeGetUniform("ExposureIntensity").set(exposureIntensity);
+                    }
+                    if (effect.safeGetUniform("ColorGradeStrength") != null) {
+                        effect.safeGetUniform("ColorGradeStrength").set(colorGradeStrength);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // Ignore
+        }
     }
 }
 

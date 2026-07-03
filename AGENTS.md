@@ -43,9 +43,10 @@ c:/Users/user/Desktop/dev/mod Grand Teleport Neoforge portage/
 ## Règles de développement universelles
 - **Chirurgical** : Ne jamais réécrire un fichier entier si une modification ciblée et chirurgicale est possible.
 - **Dépendances** : Ne jamais inventer, ajouter ou installer de dépendance sans validation explicite.
-- **Qualité** : Typage strict, modularité, lisibilité, pas de fonctions ou variables mortes.
+- **Qualité** : Typage strict, modularité, lisibilité, pas de fonctions ou variables mortes. Essayer le plus possible de diviser (splitter) les fichiers volumineux en classes/fichiers distincts lorsque c'est utile afin de rendre le code plus gérable. Le code doit être conçu pour être facilement manipulable par des agents IA, ce qui facilitera grandement les modifications futures et les portages vers d'autres versions de Minecraft.
 - **Validation** : Toujours poser des questions et obtenir la validation explicite de l'utilisateur avant de modifier le code.
 - **Git** : Ne jamais pousser (`git push`) ou committer de modifications sur un dépôt distant sans l'accord explicite préalable de l'utilisateur.
+- **Internationalisation** : Toutes les descriptions, textes et tooltips du mod doivent être traduits en français (`fr_fr.json`) et en anglais (`en_us.json`) via le système de localisation natif de Minecraft (`Component.translatable()`).
 - **Fin de Session** : Ne pas décider de terminer de manière autonome. Suivre le protocole strict de fin de session (mise à jour d'AGENTS.md, compilation, résumé dans un bloc texte unique) si l'utilisateur en signale la fin.
 
 ---
@@ -84,9 +85,16 @@ c:/Users/user/Desktop/dev/mod Grand Teleport Neoforge portage/
   - **Bug fix** : `GtaLikeTeleportMixinPlugin` utilisait `ModList` (runtime) dans `shouldApplyMixin()`, appelé bien avant l'initialisation de FML. Remplacé par `LoadingModList` (early-loading) → NPE corrigé.
   - **Bug fix** : `NeoForge.EVENT_BUS.register(this)` dans `GtaLikeTeleport` levait une `IllegalArgumentException` car la classe n'a aucune méthode `@SubscribeEvent` (elle utilise `addListener()`). Ligne supprimée.
   - **Validation en jeu** : mod testé et fonctionnel en jeu avec des mods tiers (Waystones, JourneyMap, Sodium, etc.).
+- **Personnalisations avancées (VFX, SFX & Config)**
+  - Toggles de personnalisation en jeu (presets, packs de sons GTA, vignette, shutter flash, scanlines).
+  - Filtres d'intégration pour limiter les transitions (vanilla `/tp`, Waystones, JourneyMap, portails).
+  - Double colonne de configuration dans l'écran de paramètres.
+  - **Effet Shading de Caméra & Exposition GLSL** : Intégration d'un post-processing shader GLSL (`satellite_camera`) gérant en temps réel la colorisation militaire vert-kaki et une adaptation dynamique de l'exposition (bloom lumineux sur les zones claires) augmentant avec l'altitude de la caméra et culminant lors du plongeon final.
+  - **Synchronisation Audio GTA V** : Importation et configuration de 4 fichiers audio GTA V (`gta5_dezoom`, `gta5_wind`, `gta5_zoom`, `gta5_landing`) parfaitement calés sur les phases de zoom-out, de voyage, de zoom-in et d'impact final.
+  - Compilation et packaging final validés avec succès.
 
 ### 🔄 À faire
-- Aucun élément restant. Le portage Fabric → NeoForge 1.21.1 est **entièrement terminé, corrigé et validé en jeu** !
+- Aucun élément restant. Le portage Fabric → NeoForge 1.21.1 ainsi que l'ensemble des personnalisations demandées sont **entièrement terminés, corrigés et validés par compilation** !
 
 ---
 
