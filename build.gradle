@@ -3,6 +3,8 @@ plugins {
     id 'maven-publish'
     id 'net.neoforged.moddev' version '2.0.141'
     id 'idea'
+    id 'com.modrinth.minotaur' version '2.9.0'
+    id 'net.darkhax.curseforgegradle' version '1.1.28'
 }
 
 tasks.named('wrapper', Wrapper).configure {
@@ -31,7 +33,7 @@ repositories {
 }
 
 base {
-    archivesName = mod_id
+    archivesName = "GrandTeleport-NeoForge-${minecraft_version}"
 }
 
 // Mojang ships Java 21 to end users in 1.21.1, so mods should target Java 21.
@@ -189,4 +191,37 @@ idea {
         downloadSources = true
         downloadJavadoc = true
     }
+}
+
+def releaseType = project.version.toString().contains('alpha')
+        ? 'alpha'
+        : (project.version.toString().contains('beta') ? 'beta' : 'release')
+
+def publishChangelogFile = rootProject.file('CHANGELOG.md')
+def publishChangelog = publishChangelogFile.exists()
+        ? publishChangelogFile.text
+        : { throw new GradleException('CHANGELOG.md is required before publishing. Update it with release notes for ' + project.version + '.') }()
+
+modrinth {
+    token = System.getenv('MODRINTH_TOKEN')
+    projectId = 'TON_ID_MODRINTH_ICI'
+    versionNumber = "${project.version}"
+    versionName = "${mod_name} ${project.version} (NeoForge ${minecraft_version})"
+    versionType = releaseType
+    uploadFile = jar
+    gameVersions = [minecraft_version]
+    loaders = ['neoforge']
+    changelog = publishChangelog
+}
+
+tasks.register('curseforge', net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+    apiToken = System.getenv('CURSEFORGE_TOKEN')
+
+    // CurseForge requiert un ID numerique (visible dans l'URL du projet ou via l'API).
+    def mainFile = upload('1234567', jar) // TODO: remplacer 1234567 par votre ID CurseForge
+    mainFile.changelog = publishChangelog
+    mainFile.changelogType = 'markdown'
+    mainFile.releaseType = releaseType
+    mainFile.displayName = "${mod_name} ${project.version} (NeoForge ${minecraft_version})"
+    mainFile.addGameVersion(minecraft_version)
 }

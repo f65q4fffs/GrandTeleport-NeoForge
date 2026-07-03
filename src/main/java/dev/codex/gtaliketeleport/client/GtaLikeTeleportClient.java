@@ -109,6 +109,12 @@ public final class GtaLikeTeleportClient {
                             .then(Commands.literal("on").executes(context -> setPlayerFreezeEnabled(context.getSource(), true)))
                             .then(Commands.literal("off").executes(context -> setPlayerFreezeEnabled(context.getSource(), false)))
                             .then(Commands.literal("status").executes(context -> sendPlayerFreezeStatusFeedback(context.getSource()))))
+                    .then(Commands.literal("config").executes(context -> openConfigScreen(context.getSource())))
+                    .then(Commands.literal("sound")
+                            .executes(context -> sendSoundPackFeedback(context.getSource()))
+                            .then(Commands.literal("gta").executes(context -> setSoundPack(context.getSource(), GtaLikeTeleportConfig.SOUND_PACK_GTA)))
+                            .then(Commands.literal("default").executes(context -> setSoundPack(context.getSource(), GtaLikeTeleportConfig.SOUND_PACK_DEFAULT)))
+                            .then(Commands.literal("off").executes(context -> setSoundPack(context.getSource(), GtaLikeTeleportConfig.SOUND_PACK_OFF))))
                     .then(Commands.argument("value", StringArgumentType.word()).executes(context -> handleCommandArgument(
                             context.getSource(),
                             StringArgumentType.getString(context, "value")
@@ -132,6 +138,11 @@ public final class GtaLikeTeleportClient {
         }
 
         if (!TeleportCommandMatcher.isTeleportCommand(command) || client.player == null || client.getConnection() == null) {
+            return true;
+        }
+
+        if (!GtaLikeTeleportConfig.isVanillaTpEnabled()) {
+            GtaLikeTeleportClientNetworking.sendBypassNextServerTeleport();
             return true;
         }
 
@@ -162,6 +173,16 @@ public final class GtaLikeTeleportClient {
             return true;
         }
 
+        if (teleportTarget.isWaystones() && !GtaLikeTeleportConfig.isWaystonesEnabled()) {
+            GtaLikeTeleportClientNetworking.sendBypassNextServerTeleport();
+            return true;
+        }
+
+        if (!teleportTarget.isWaystones() && !GtaLikeTeleportConfig.isJourneyMapEnabled()) {
+            GtaLikeTeleportClientNetworking.sendBypassNextServerTeleport();
+            return true;
+        }
+
         if (TeleportTransitionController.isRunning()) {
             return true;
         }
@@ -187,6 +208,11 @@ public final class GtaLikeTeleportClient {
 
         Minecraft client = Minecraft.getInstance();
         if (!GtaLikeTeleportConfig.isEffectEnabled() || client.player == null || client.level == null || client.getConnection() == null) {
+            return true;
+        }
+
+        if (!GtaLikeTeleportConfig.isJourneyMapEnabled()) {
+            GtaLikeTeleportClientNetworking.sendBypassNextServerTeleport();
             return true;
         }
 
@@ -294,7 +320,7 @@ public final class GtaLikeTeleportClient {
                     readDouble(payload, "getY"),
                     readDouble(payload, "getZ")
             );
-            return new PacketTeleportTarget(targetFeet, readOptionalDimensionId(payload, "getDimension"), false);
+            return new PacketTeleportTarget(targetFeet, readOptionalDimensionId(payload, "getDimension"), false, false);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassCastException ignored) {
             return null;
         }
@@ -307,12 +333,12 @@ public final class GtaLikeTeleportClient {
 
         if (id.getPath().equals("select_waystone")) {
             WaystoneTarget target = getWaystonesSelectedTarget(payload);
-            return target == null ? null : new PacketTeleportTarget(target.targetFeet(), target.targetDimensionId(), true);
+            return target == null ? null : new PacketTeleportTarget(target.targetFeet(), target.targetDimensionId(), true, true);
         }
 
         if (id.getPath().equals("inventory_button")) {
             WaystoneTarget target = getWaystonesInventoryButtonTarget();
-            return target == null ? null : new PacketTeleportTarget(target.targetFeet(), target.targetDimensionId(), false);
+            return target == null ? null : new PacketTeleportTarget(target.targetFeet(), target.targetDimensionId(), false, true);
         }
 
         return null;
@@ -477,6 +503,40 @@ public final class GtaLikeTeleportClient {
         return 1;
     }
 
+    private static int openConfigScreen(CommandSourceStack source) {
+        Minecraft client = Minecraft.getInstance();
+        client.setScreen(new GtaLikeTeleportConfigScreen(client.screen));
+        source.sendSuccess(() -> Component.literal("Grand Teleport settings opened."), false);
+        return 1;
+    }
+
+    private static int sendSoundPackFeedback(CommandSourceStack source) {
+        source.sendSuccess(() -> Component.translatable(
+                "gtalike_teleport.feedback.sound_pack_status",
+                getSoundPackLabel(GtaLikeTeleportConfig.getSoundPack())
+        ), false);
+        return 1;
+    }
+
+    private static int setSoundPack(CommandSourceStack source, String pack) {
+        boolean saved = GtaLikeTeleportConfig.setSoundPack(pack);
+        Component label = getSoundPackLabel(GtaLikeTeleportConfig.getSoundPack());
+        if (saved) {
+            source.sendSuccess(() -> Component.translatable("gtalike_teleport.feedback.sound_pack_changed", label), false);
+        } else {
+            source.sendFailure(Component.translatable("gtalike_teleport.feedback.sound_pack_save_failed", label));
+        }
+        return saved ? 1 : 0;
+    }
+
+    private static Component getSoundPackLabel(String pack) {
+        return switch (pack) {
+            case GtaLikeTeleportConfig.SOUND_PACK_DEFAULT -> Component.translatable("gtalike_teleport.option.sound_mode.default");
+            case GtaLikeTeleportConfig.SOUND_PACK_OFF -> Component.translatable("gtalike_teleport.option.sound_mode.off");
+            default -> Component.translatable("gtalike_teleport.option.sound_mode.gta");
+        };
+    }
+
     private static boolean canExecuteServerCommand(Minecraft client, String command) {
         ClientPacketListener networkHandler = client.getConnection();
         if (networkHandler == null) {
@@ -587,6 +647,12 @@ public final class GtaLikeTeleportClient {
             return true;
         }
 
+        if (lowerArgument.equals("config") || lowerArgument.equals("settings")) {
+            client.setScreen(new GtaLikeTeleportConfigScreen(client.screen));
+            sendFeedback(client, Component.literal("Grand Teleport settings opened.").withStyle(ChatFormatting.GRAY));
+            return true;
+        }
+
         sendFeedback(client, Component.literal(USAGE_MESSAGE).withStyle(ChatFormatting.RED));
         return true;
     }
@@ -616,6 +682,6 @@ public final class GtaLikeTeleportClient {
     private record WaystoneTarget(Vec3 targetFeet, String targetDimensionId) {
     }
 
-    private record PacketTeleportTarget(Vec3 targetFeet, String targetDimensionId, boolean keepMenuOpen) {
+    private record PacketTeleportTarget(Vec3 targetFeet, String targetDimensionId, boolean keepMenuOpen, boolean isWaystones) {
     }
 }

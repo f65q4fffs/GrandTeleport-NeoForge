@@ -56,398 +56,78 @@ public final class GtaLikeTeleportConfig {
     private static final String CONFIG_LAYOUT_BASE_HEIGHT_KEY = "configLayoutBaseHeight";
     private static final String CONFIG_WIDGET_PREFIX = "configWidget.";
     private static final String CONFIG_TEXT_PREFIX = "configText.";
+    private static final String TRANSITION_PRESET_KEY = "transitionPreset";
+    private static final String SOUND_PACK_KEY = "soundPack";
+    public static final String SOUND_PACK_GTA = "gta";
+    public static final String SOUND_PACK_DEFAULT = "default";
+    public static final String SOUND_PACK_OFF = "off";
+    private static final String ENABLE_SHUTTER_FLASH_KEY = "enableShutterFlash";
+    private static final String ENABLE_VIGNETTE_KEY = "enableVignette";
+    private static final String ENABLE_INTERFERENCE_LINES_KEY = "enableInterferenceLines";
+    private static final String FADE_COLOR_KEY = "fadeColor";
+    private static final String ENABLE_VANILLA_TP_KEY = "enableVanillaTp";
+    private static final String ENABLE_WAYSTONES_KEY = "enableWaystones";
+    private static final String ENABLE_JOURNEYMAP_KEY = "enableJourneyMap";
+    private static final String ENABLE_PORTALS_KEY = "enablePortals";
+    private static final String ENABLE_SATELLITE_CAMERA_FX_KEY = "enableSatelliteCameraFx";
+    private static final String SATELLITE_GAMMA_STRENGTH_KEY = "satelliteGammaStrength";
+    private static final String SATELLITE_GAMMA_DECAY_TICKS_KEY = "satelliteGammaDecayTicks";
+    private static final String SATELLITE_GAMMA_OVERLAY_LIFT_KEY = "satelliteGammaOverlayLift";
+    private static final String SATELLITE_GAMMA_BLOWOUT_STRENGTH_KEY = "satelliteGammaBlowoutStrength";
+    private static final String SATELLITE_COLOR_GRADE_MAX_KEY = "satelliteColorGradeMax";
+    private static final String SATELLITE_PLUNGE_EXPOSURE_MAX_KEY = "satellitePlungeExposureMax";
+    private static final String SATELLITE_SHADER_EXPOSURE_SCALE_KEY = "satelliteShaderExposureScale";
+    private static final double DEFAULT_SATELLITE_GAMMA_STRENGTH = 2.0D;
+    private static final double MIN_SATELLITE_GAMMA_STRENGTH = 0.1D;
+    private static final double MAX_SATELLITE_GAMMA_STRENGTH = 4.0D;
+    private static final double DEFAULT_SATELLITE_GAMMA_DECAY_TICKS = 6.0D;
+    private static final double MIN_SATELLITE_GAMMA_DECAY_TICKS = 2.0D;
+    private static final double MAX_SATELLITE_GAMMA_DECAY_TICKS = 15.0D;
+    private static final double DEFAULT_SATELLITE_GAMMA_OVERLAY_LIFT = 0.55D;
+    private static final double DEFAULT_SATELLITE_GAMMA_BLOWOUT_STRENGTH = 0.65D;
+    private static final double DEFAULT_SATELLITE_COLOR_GRADE_MAX = 0.38D;
+    private static final double DEFAULT_SATELLITE_PLUNGE_EXPOSURE_MAX = 0.6D;
+    private static final double DEFAULT_SATELLITE_SHADER_EXPOSURE_SCALE = 1.25D;
+    private static final double MIN_SATELLITE_UNIT = 0.0D;
+    private static final double MAX_SATELLITE_UNIT = 1.0D;
+    private static final double MIN_SATELLITE_SHADER_SCALE = 0.0D;
+    private static final double MAX_SATELLITE_SHADER_SCALE = 3.0D;
+    private static final int CURRENT_CONFIG_VERSION = 8;
+    private static final String CONFIG_VERSION_KEY = "configVersion";
     private static final String DEFAULT_CONFIG_PROPERTIES = """
+configVersion=8
+enableSatelliteCameraFx=false
+satelliteGammaStrength=2.0
+satelliteGammaDecayTicks=6.0
+satelliteGammaOverlayLift=0.55
+satelliteGammaBlowoutStrength=0.65
+satelliteColorGradeMax=0.38
+satellitePlungeExposureMax=0.6
+satelliteShaderExposureScale=1.25
 bodyCameraHeight=6.0
+transitionPreset=classic
+soundPack=gta
+enableShutterFlash=false
+enableVignette=false
+enableInterferenceLines=false
+fadeColor=black
+enableVanillaTp=true
+enableWaystones=true
+enableJourneyMap=true
+enablePortals=true
 bodyGlideHeight=0.5
 bodyGlideTicks=10
 configLayoutAspectLocked=false
 configLayoutBaseHeight=353
 configLayoutBaseWidth=640
-configLayoutCustom=true
+configLayoutCustom=false
 configLayoutDebugEnabled=false
 configLayoutEditorButtonVisible=false
 configLayoutGridEnabled=true
-configLayoutHeight=0.6005665722379604
 configLayoutSnapEnabled=false
-configLayoutWidth=0.5796875
-configLayoutX=0.2109375
-configLayoutY=0.23796033994334279
-configText.advanced1_title=GTP Advanced Settings (1)
-configText.advanced2_description=Set tick lengths for each zoom stage. (1st / 2nd / 3rd)
-configText.advanced2_title=ZoomStage Settings (2)
-configText.advanced3_title=GTP Advanced Settings (3)
-configText.done_button=Close
-configText.fallback_chunk_fade_label=Vanilla/Sodium chunk-mask fade
-configText.general_title=General Settings
-configText.linked_slider=\\    camera_zoom 1st / 2nd / 3rd
-configText.others_title=Other Settings
-configText.reset_button=Reset
-configText.sounds_title=Sound Settings
-configText.title=ZoomStage Settings
-configText.zoom_out_ticks_label=Zoom-out stage ticks
-configWidget.advanced1_description.baseHeight=195
-configWidget.advanced1_description.baseWidth=368
-configWidget.advanced1_description.height=0.05128205128205128
-configWidget.advanced1_description.width=0.5407608695652174
-configWidget.advanced1_description.x=0.22826086956521738
-configWidget.advanced1_description.y=0.13333333333333333
-configWidget.advanced1_title.baseHeight=195
-configWidget.advanced1_title.baseWidth=368
-configWidget.advanced1_title.height=0.05128205128205128
-configWidget.advanced1_title.width=0.24456521739130435
-configWidget.advanced1_title.x=0.37771739130434784
-configWidget.advanced1_title.y=0.015384615384615385
-configWidget.advanced2_description.baseHeight=212
-configWidget.advanced2_description.baseWidth=371
-configWidget.advanced2_description.height=0.04716981132075472
-configWidget.advanced2_description.width=0.7601078167115903
-configWidget.advanced2_description.x=0.11859838274932614
-configWidget.advanced2_description.y=0.15566037735849056
-configWidget.advanced2_title.baseHeight=198
-configWidget.advanced2_title.baseWidth=368
-configWidget.advanced2_title.height=0.050505050505050504
-configWidget.advanced2_title.width=0.24456521739130435
-configWidget.advanced2_title.x=0.37771739130434784
-configWidget.advanced2_title.y=0.020202020202020204
-configWidget.advanced3_description.baseHeight=195
-configWidget.advanced3_description.baseWidth=368
-configWidget.advanced3_description.height=0.05128205128205128
-configWidget.advanced3_description.width=0.6059782608695652
-configWidget.advanced3_description.x=0.1956521739130435
-configWidget.advanced3_description.y=0.13333333333333333
-configWidget.advanced3_title.baseHeight=195
-configWidget.advanced3_title.baseWidth=368
-configWidget.advanced3_title.height=0.05128205128205128
-configWidget.advanced3_title.width=0.24456521739130435
-configWidget.advanced3_title.x=0.37771739130434784
-configWidget.advanced3_title.y=0.015384615384615385
-configWidget.body_glide_slider.baseHeight=195
-configWidget.body_glide_slider.baseWidth=368
-configWidget.body_glide_slider.height=0.24102564102564103
-configWidget.body_glide_slider.width=0.5
-configWidget.body_glide_slider.x=0.5
-configWidget.body_glide_slider.y=0.2153846153846154
-configWidget.body_glide_ticks_field.baseHeight=195
-configWidget.body_glide_ticks_field.baseWidth=368
-configWidget.body_glide_ticks_field.height=0.10256410256410256
-configWidget.body_glide_ticks_field.width=0.25
-configWidget.body_glide_ticks_field.x=0.7038043478260869
-configWidget.body_glide_ticks_field.y=0.5025641025641026
-configWidget.body_glide_ticks_label.baseHeight=195
-configWidget.body_glide_ticks_label.baseWidth=368
-configWidget.body_glide_ticks_label.height=0.07179487179487179
-configWidget.body_glide_ticks_label.width=0.5652173913043478
-configWidget.body_glide_ticks_label.x=0.043478260869565216
-configWidget.body_glide_ticks_label.y=0.5333333333333333
-configWidget.body_height_slider.baseHeight=195
-configWidget.body_height_slider.baseWidth=368
-configWidget.body_height_slider.height=0.24102564102564103
-configWidget.body_height_slider.width=0.5
-configWidget.body_height_slider.x=0.0
-configWidget.body_height_slider.y=0.2153846153846154
-configWidget.cross_dimension_travel_label.baseHeight=212
-configWidget.cross_dimension_travel_label.baseWidth=371
-configWidget.cross_dimension_travel_label.height=0.05660377358490566
-configWidget.cross_dimension_travel_label.width=0.5417789757412399
-configWidget.cross_dimension_travel_label.x=0.05390835579514825
-configWidget.cross_dimension_travel_label.y=0.6132075471698113
-configWidget.cross_dimension_travel_toggle.baseHeight=212
-configWidget.cross_dimension_travel_toggle.baseWidth=371
-configWidget.cross_dimension_travel_toggle.height=0.09433962264150944
-configWidget.cross_dimension_travel_toggle.width=0.25067385444743934
-configWidget.cross_dimension_travel_toggle.x=0.6954177897574124
-configWidget.cross_dimension_travel_toggle.y=0.589622641509434
-configWidget.custom_volume_slider.baseHeight=297
-configWidget.custom_volume_slider.baseWidth=551
-configWidget.custom_volume_slider.height=0.2222222222222222
-configWidget.custom_volume_slider.width=0.5009074410163339
-configWidget.custom_volume_slider.x=0.5009074410163339
-configWidget.custom_volume_slider.y=0.4612794612794613
-configWidget.description.baseHeight=212
-configWidget.description.baseWidth=371
-configWidget.description.height=0.05188679245283019
-configWidget.description.width=0.6738544474393531
-configWidget.description.x=0.16172506738544473
-configWidget.description.y=0.15566037735849056
-configWidget.dimension_end.baseHeight=198
-configWidget.dimension_end.baseWidth=368
-configWidget.dimension_end.height=0.08080808080808081
-configWidget.dimension_end.width=0.043478260869565216
-configWidget.dimension_end.x=0.5244565217391305
-configWidget.dimension_end.y=0.8939393939393939
-configWidget.dimension_nether.baseHeight=198
-configWidget.dimension_nether.baseWidth=368
-configWidget.dimension_nether.height=0.08080808080808081
-configWidget.dimension_nether.width=0.043478260869565216
-configWidget.dimension_nether.x=0.47554347826086957
-configWidget.dimension_nether.y=0.8939393939393939
-configWidget.dimension_overworld.baseHeight=198
-configWidget.dimension_overworld.baseWidth=368
-configWidget.dimension_overworld.height=0.08080808080808081
-configWidget.dimension_overworld.width=0.043478260869565216
-configWidget.dimension_overworld.x=0.4266304347826087
-configWidget.dimension_overworld.y=0.8939393939393939
-configWidget.done_button.baseHeight=198
-configWidget.done_button.baseWidth=368
-configWidget.done_button.height=0.10101010101010101
-configWidget.done_button.width=0.44565217391304346
-configWidget.done_button.x=0.5543478260869565
-configWidget.done_button.y=0.7929292929292929
-configWidget.effect_label.baseHeight=212
-configWidget.effect_label.baseWidth=371
-configWidget.effect_label.height=0.05188679245283019
-configWidget.effect_label.width=0.31805929919137466
-configWidget.effect_label.x=0.05390835579514825
-configWidget.effect_label.y=0.3113207547169811
-configWidget.effect_toggle.baseHeight=212
-configWidget.effect_toggle.baseWidth=371
-configWidget.effect_toggle.height=0.09433962264150944
-configWidget.effect_toggle.width=0.25067385444743934
-configWidget.effect_toggle.x=0.6954177897574124
-configWidget.effect_toggle.y=0.28773584905660377
-configWidget.external_teleport_label.baseHeight=198
-configWidget.external_teleport_label.baseWidth=368
-configWidget.external_teleport_label.height=0.045454545454545456
-configWidget.external_teleport_label.width=0.483695652173913
-configWidget.external_teleport_label.x=0.05434782608695652
-configWidget.external_teleport_label.y=0.5707070707070707
-configWidget.external_teleport_toggle.baseHeight=198
-configWidget.external_teleport_toggle.baseWidth=368
-configWidget.external_teleport_toggle.height=0.10101010101010101
-configWidget.external_teleport_toggle.width=0.25
-configWidget.external_teleport_toggle.x=0.6956521739130435
-configWidget.external_teleport_toggle.y=0.5454545454545454
-configWidget.fallback_chunk_fade_label.baseHeight=132
-configWidget.fallback_chunk_fade_label.baseWidth=246
-configWidget.fallback_chunk_fade_label.height=0.06060606060606061
-configWidget.fallback_chunk_fade_label.width=0.483739837398374
-configWidget.fallback_chunk_fade_label.x=0.052845528455284556
-configWidget.fallback_chunk_fade_label.y=0.6287878787878788
-configWidget.fallback_chunk_fade_toggle.baseHeight=198
-configWidget.fallback_chunk_fade_toggle.baseWidth=368
-configWidget.fallback_chunk_fade_toggle.height=0.10101010101010101
-configWidget.fallback_chunk_fade_toggle.width=0.25
-configWidget.fallback_chunk_fade_toggle.x=0.6956521739130435
-configWidget.fallback_chunk_fade_toggle.y=0.601010101010101
-configWidget.general_description.baseHeight=212
-configWidget.general_description.baseWidth=371
-configWidget.general_description.height=0.05188679245283019
-configWidget.general_description.width=0.31266846361185985
-configWidget.general_description.x=0.19137466307277629
-configWidget.general_description.y=0.15566037735849056
-configWidget.general_title.baseHeight=198
-configWidget.general_title.baseWidth=368
-configWidget.general_title.height=0.050505050505050504
-configWidget.general_title.width=0.3125
-configWidget.general_title.x=0.3451086956521739
-configWidget.general_title.y=0.020202020202020204
-configWidget.link_button.baseHeight=198
-configWidget.link_button.baseWidth=368
-configWidget.link_button.height=0.10101010101010101
-configWidget.link_button.width=0.05434782608695652
-configWidget.link_button.x=0.47282608695652173
-configWidget.link_button.y=0.7929292929292929
-configWidget.linked_slider.baseHeight=0
-configWidget.linked_slider.baseWidth=0
-configWidget.linked_slider.height=0.2571428571428571
-configWidget.linked_slider.width=1.0
-configWidget.linked_slider.x=0.0
-configWidget.linked_slider.y=0.3314285714285714
-configWidget.minecraft_volume_slider.baseHeight=297
-configWidget.minecraft_volume_slider.baseWidth=551
-configWidget.minecraft_volume_slider.height=0.2222222222222222
-configWidget.minecraft_volume_slider.width=0.5009074410163339
-configWidget.minecraft_volume_slider.x=0.0
-configWidget.minecraft_volume_slider.y=0.4612794612794613
-configWidget.movement_label.baseHeight=212
-configWidget.movement_label.baseWidth=371
-configWidget.movement_label.height=0.06132075471698113
-configWidget.movement_label.width=0.4366576819407008
-configWidget.movement_label.x=0.05390835579514825
-configWidget.movement_label.y=0.46226415094339623
-configWidget.movement_toggle.baseHeight=212
-configWidget.movement_toggle.baseWidth=371
-configWidget.movement_toggle.height=0.09433962264150944
-configWidget.movement_toggle.width=0.25067385444743934
-configWidget.movement_toggle.x=0.6954177897574124
-configWidget.movement_toggle.y=0.4386792452830189
-configWidget.others_description.baseHeight=212
-configWidget.others_description.baseWidth=371
-configWidget.others_description.height=0.04716981132075472
-configWidget.others_description.width=0.8382749326145552
-configWidget.others_description.x=0.08086253369272237
-configWidget.others_description.y=0.15566037735849056
-configWidget.others_title.baseHeight=198
-configWidget.others_title.baseWidth=368
-configWidget.others_title.height=0.050505050505050504
-configWidget.others_title.width=0.2826086956521739
-configWidget.others_title.x=0.358695652173913
-configWidget.others_title.y=0.020202020202020204
-configWidget.player_hide_label.baseHeight=195
-configWidget.player_hide_label.baseWidth=368
-configWidget.player_hide_label.height=0.06153846153846154
-configWidget.player_hide_label.width=0.5652173913043478
-configWidget.player_hide_label.x=0.043478260869565216
-configWidget.player_hide_label.y=0.676923076923077
-configWidget.player_hide_slider.baseHeight=195
-configWidget.player_hide_slider.baseWidth=368
-configWidget.player_hide_slider.height=0.22564102564102564
-configWidget.player_hide_slider.width=0.8695652173913043
-configWidget.player_hide_slider.x=0.021739130434782608
-configWidget.player_hide_slider.y=0.5692307692307692
-configWidget.player_hide_ticks_field.baseHeight=195
-configWidget.player_hide_ticks_field.baseWidth=368
-configWidget.player_hide_ticks_field.height=0.10256410256410256
-configWidget.player_hide_ticks_field.width=0.25
-configWidget.player_hide_ticks_field.x=0.7038043478260869
-configWidget.player_hide_ticks_field.y=0.6461538461538462
-configWidget.reset_button.baseHeight=198
-configWidget.reset_button.baseWidth=368
-configWidget.reset_button.height=0.10101010101010101
-configWidget.reset_button.width=0.44565217391304346
-configWidget.reset_button.x=0.0
-configWidget.reset_button.y=0.7929292929292929
-configWidget.sound_mode_label.baseHeight=198
-configWidget.sound_mode_label.baseWidth=368
-configWidget.sound_mode_label.height=0.05555555555555555
-configWidget.sound_mode_label.width=0.483695652173913
-configWidget.sound_mode_label.x=0.06521739130434782
-configWidget.sound_mode_label.y=0.29797979797979796
-configWidget.sound_mode_toggle.baseHeight=198
-configWidget.sound_mode_toggle.baseWidth=368
-configWidget.sound_mode_toggle.height=0.10101010101010101
-configWidget.sound_mode_toggle.width=0.30434782608695654
-configWidget.sound_mode_toggle.x=0.6331521739130435
-configWidget.sound_mode_toggle.y=0.2727272727272727
-configWidget.sounds_description.baseHeight=212
-configWidget.sounds_description.baseWidth=371
-configWidget.sounds_description.height=0.04716981132075472
-configWidget.sounds_description.width=0.6522911051212938
-configWidget.sounds_description.x=0.1752021563342318
-configWidget.sounds_description.y=0.15566037735849056
-configWidget.sounds_title.baseHeight=198
-configWidget.sounds_title.baseWidth=368
-configWidget.sounds_title.height=0.050505050505050504
-configWidget.sounds_title.width=0.28804347826086957
-configWidget.sounds_title.x=0.35597826086956524
-configWidget.sounds_title.y=0.020202020202020204
-configWidget.status_linked.baseHeight=195
-configWidget.status_linked.baseWidth=368
-configWidget.status_linked.height=0.041025641025641026
-configWidget.status_linked.width=0.08695652173913043
-configWidget.status_linked.x=0.45652173913043476
-configWidget.status_linked.y=0.9179487179487179
-configWidget.status_unlinked.baseHeight=195
-configWidget.status_unlinked.baseWidth=368
-configWidget.status_unlinked.height=0.041025641025641026
-configWidget.status_unlinked.width=0.13043478260869565
-configWidget.status_unlinked.x=0.43478260869565216
-configWidget.status_unlinked.y=0.9179487179487179
-configWidget.tab_general.baseHeight=212
-configWidget.tab_general.baseWidth=371
-configWidget.tab_general.height=0.09433962264150944
-configWidget.tab_general.width=0.2183288409703504
-configWidget.tab_general.x=-0.03773584905660377
-configWidget.tab_general.y=-0.13679245283018868
-configWidget.tab_others.baseHeight=212
-configWidget.tab_others.baseWidth=371
-configWidget.tab_others.height=0.09433962264150944
-configWidget.tab_others.width=0.2183288409703504
-configWidget.tab_others.x=0.8194070080862533
-configWidget.tab_others.y=-0.13679245283018868
-configWidget.tab_sounds.baseHeight=212
-configWidget.tab_sounds.baseWidth=371
-configWidget.tab_sounds.height=0.09433962264150944
-configWidget.tab_sounds.width=0.2183288409703504
-configWidget.tab_sounds.x=0.6091644204851752
-configWidget.tab_sounds.y=-0.13679245283018868
-configWidget.tab_zoom_stage.baseHeight=212
-configWidget.tab_zoom_stage.baseWidth=371
-configWidget.tab_zoom_stage.height=0.09433962264150944
-configWidget.tab_zoom_stage.width=0.2183288409703504
-configWidget.tab_zoom_stage.x=0.1778975741239892
-configWidget.tab_zoom_stage.y=-0.13679245283018868
-configWidget.tab_zoom_stage_2.baseHeight=212
-configWidget.tab_zoom_stage_2.baseWidth=371
-configWidget.tab_zoom_stage_2.height=0.09433962264150944
-configWidget.tab_zoom_stage_2.width=0.2183288409703504
-configWidget.tab_zoom_stage_2.x=0.3935309973045822
-configWidget.tab_zoom_stage_2.y=-0.13679245283018868
-configWidget.title.baseHeight=198
-configWidget.title.baseWidth=368
-configWidget.title.height=0.05555555555555555
-configWidget.title.width=0.13043478260869565
-configWidget.title.x=0.43478260869565216
-configWidget.title.y=0.020202020202020204
-configWidget.warp_plate_label.baseHeight=198
-configWidget.warp_plate_label.baseWidth=368
-configWidget.warp_plate_label.height=0.045454545454545456
-configWidget.warp_plate_label.width=0.483695652173913
-configWidget.warp_plate_label.x=0.05434782608695652
-configWidget.warp_plate_label.y=0.35353535353535354
-configWidget.warp_plate_toggle.baseHeight=198
-configWidget.warp_plate_toggle.baseWidth=368
-configWidget.warp_plate_toggle.height=0.10101010101010101
-configWidget.warp_plate_toggle.width=0.25
-configWidget.warp_plate_toggle.x=0.6956521739130435
-configWidget.warp_plate_toggle.y=0.3282828282828283
-configWidget.zoom_in_slider.baseHeight=198
-configWidget.zoom_in_slider.baseWidth=368
-configWidget.zoom_in_slider.height=0.2222222222222222
-configWidget.zoom_in_slider.width=1.0
-configWidget.zoom_in_slider.x=0.0
-configWidget.zoom_in_slider.y=0.5050505050505051
-configWidget.zoom_in_ticks_field.baseHeight=198
-configWidget.zoom_in_ticks_field.baseWidth=368
-configWidget.zoom_in_ticks_field.height=0.10101010101010101
-configWidget.zoom_in_ticks_field.width=0.37228260869565216
-configWidget.zoom_in_ticks_field.x=0.5760869565217391
-configWidget.zoom_in_ticks_field.y=0.5454545454545454
-configWidget.zoom_in_ticks_label.baseHeight=198
-configWidget.zoom_in_ticks_label.baseWidth=368
-configWidget.zoom_in_ticks_label.height=0.06060606060606061
-configWidget.zoom_in_ticks_label.width=0.42934782608695654
-configWidget.zoom_in_ticks_label.x=0.05434782608695652
-configWidget.zoom_in_ticks_label.y=0.5707070707070707
-configWidget.zoom_out_slider.baseHeight=195
-configWidget.zoom_out_slider.baseWidth=368
-configWidget.zoom_out_slider.height=0.22564102564102564
-configWidget.zoom_out_slider.width=1.0
-configWidget.zoom_out_slider.x=0.0
-configWidget.zoom_out_slider.y=0.23076923076923078
-configWidget.zoom_out_ticks_field.baseHeight=198
-configWidget.zoom_out_ticks_field.baseWidth=368
-configWidget.zoom_out_ticks_field.height=0.10101010101010101
-configWidget.zoom_out_ticks_field.width=0.37228260869565216
-configWidget.zoom_out_ticks_field.x=0.5760869565217391
-configWidget.zoom_out_ticks_field.y=0.3282828282828283
-configWidget.zoom_out_ticks_label.baseHeight=198
-configWidget.zoom_out_ticks_label.baseWidth=368
-configWidget.zoom_out_ticks_label.height=0.06060606060606061
-configWidget.zoom_out_ticks_label.width=0.42934782608695654
-configWidget.zoom_out_ticks_label.x=0.05434782608695652
-configWidget.zoom_out_ticks_label.y=0.35353535353535354
-configWidget.zoom_stage_glide_slider.baseHeight=195
-configWidget.zoom_stage_glide_slider.baseWidth=368
-configWidget.zoom_stage_glide_slider.height=0.22564102564102564
-configWidget.zoom_stage_glide_slider.width=1.0
-configWidget.zoom_stage_glide_slider.x=0.0
-configWidget.zoom_stage_glide_slider.y=0.26153846153846155
-configWidget.zoom_stage_glide_ticks_field.baseHeight=195
-configWidget.zoom_stage_glide_ticks_field.baseWidth=368
-configWidget.zoom_stage_glide_ticks_field.height=0.10256410256410256
-configWidget.zoom_stage_glide_ticks_field.width=0.25
-configWidget.zoom_stage_glide_ticks_field.x=0.7092391304347826
-configWidget.zoom_stage_glide_ticks_field.y=0.5897435897435898
-configWidget.zoom_stage_glide_ticks_label.baseHeight=195
-configWidget.zoom_stage_glide_ticks_label.baseWidth=368
-configWidget.zoom_stage_glide_ticks_label.height=0.06666666666666667
-configWidget.zoom_stage_glide_ticks_label.width=0.5652173913043478
-configWidget.zoom_stage_glide_ticks_label.x=0.03804347826086957
-configWidget.zoom_stage_glide_ticks_label.y=0.6153846153846154
 crossDimensionTravelEnabled=false
 customSoundVolume=0.5
-customSoundsEnabled=false
+customSoundsEnabled=true
 effectEnabled=true
 endZoomHeightsLinked=true
 endZoomInStage1=20
@@ -485,7 +165,6 @@ zoomOutStageTicks3=13
 zoomStageGlideHeight=0.5
 zoomStageGlideTicks=13
             """;
-
     private static final double[] DEFAULT_STAGE_HEIGHTS = {20.0D, 40.0D, 60.0D};
     private static final double MIN_STAGE_HEIGHT = 8.0D;
     private static final double MAX_STAGE_HEIGHT = 512.0D;
@@ -533,7 +212,7 @@ zoomStageGlideTicks=13
     private static double bodyGlideHeight = DEFAULT_BODY_GLIDE_HEIGHT;
     private static int bodyGlideTicks = DEFAULT_BODY_GLIDE_TICKS;
     private static int localPlayerHideTicks = DEFAULT_LOCAL_PLAYER_HIDE_TICKS;
-    private static boolean customSoundsEnabled = false;
+    private static boolean customSoundsEnabled = true;
     private static double minecraftSoundVolume = DEFAULT_MINECRAFT_SOUND_VOLUME;
     private static double customSoundVolume = DEFAULT_CUSTOM_SOUND_VOLUME;
     private static boolean warpPlateTransitionsEnabled = true;
@@ -545,6 +224,24 @@ zoomStageGlideTicks=13
     private static boolean configLayoutGridEnabled = true;
     private static boolean configLayoutSnapEnabled = true;
     private static boolean configLayoutCustom = false;
+    private static String transitionPreset = "classic";
+    private static String soundPack = "gta";
+    private static boolean enableShutterFlash = false;
+    private static boolean enableVignette = false;
+    private static boolean enableInterferenceLines = false;
+    private static String fadeColor = "black";
+    private static boolean enableVanillaTp = true;
+    private static boolean enableWaystones = true;
+    private static boolean enableJourneyMap = true;
+    private static boolean enablePortals = true;
+    private static boolean enableSatelliteCameraFx = false;
+    private static double satelliteGammaStrength = DEFAULT_SATELLITE_GAMMA_STRENGTH;
+    private static double satelliteGammaDecayTicks = DEFAULT_SATELLITE_GAMMA_DECAY_TICKS;
+    private static double satelliteGammaOverlayLift = DEFAULT_SATELLITE_GAMMA_OVERLAY_LIFT;
+    private static double satelliteGammaBlowoutStrength = DEFAULT_SATELLITE_GAMMA_BLOWOUT_STRENGTH;
+    private static double satelliteColorGradeMax = DEFAULT_SATELLITE_COLOR_GRADE_MAX;
+    private static double satellitePlungeExposureMax = DEFAULT_SATELLITE_PLUNGE_EXPOSURE_MAX;
+    private static double satelliteShaderExposureScale = DEFAULT_SATELLITE_SHADER_EXPOSURE_SCALE;
     private static double configLayoutX = 0.0D;
     private static double configLayoutY = 0.0D;
     private static double configLayoutWidth = 0.0D;
@@ -560,9 +257,10 @@ zoomStageGlideTicks=13
     public static void load() {
         configPath = resolveConfigPath();
         migrateLegacyConfig();
-        resetToDefaults();
 
         if (!Files.exists(configPath)) {
+            resetToDefaults();
+            save();
             return;
         }
 
@@ -570,10 +268,21 @@ zoomStageGlideTicks=13
         Properties properties = new Properties();
         try (InputStream input = Files.newInputStream(configPath)) {
             properties.load(input);
-            rewriteConfig = prepareLoadedProperties(properties);
+            int version = readConfigVersion(properties);
+            if (version < CURRENT_CONFIG_VERSION) {
+                if (version < 7 || needsLayoutCleanup(properties)) {
+                    restoreDefaultLayoutProperties(properties);
+                }
+                applyConfigVersionMigration(properties, version);
+                properties.setProperty(CONFIG_VERSION_KEY, Integer.toString(CURRENT_CONFIG_VERSION));
+                rewriteConfig = true;
+            }
+            rewriteConfig = prepareLoadedProperties(properties) || rewriteConfig;
             applyConfigProperties(properties);
+            applySoundPackState();
             rewriteConfig = rewriteConfig || !properties.containsKey(CONFIG_LAYOUT_EDITOR_BUTTON_VISIBLE_KEY);
-        } catch (IOException ignored) {
+        } catch (IOException exception) {
+            GtaLikeTeleport.LOGGER.warn("Failed to load Grand Teleport config, using defaults.", exception);
             resetToDefaults();
         }
         if (rewriteConfig) {
@@ -588,6 +297,309 @@ zoomStageGlideTicks=13
     public static boolean setEffectEnabled(boolean enabled) {
         effectEnabled = enabled;
         return save();
+    }
+
+    public static String getTransitionPreset() {
+        return transitionPreset;
+    }
+
+    public static boolean setTransitionPreset(String preset) {
+        applyPreset(preset);
+        return true;
+    }
+
+    public static String getSoundPack() {
+        return soundPack;
+    }
+
+    public static boolean isTeleportSoundsEnabled() {
+        return !SOUND_PACK_OFF.equals(soundPack);
+    }
+
+    public static boolean isGtaSoundPack() {
+        return SOUND_PACK_GTA.equals(soundPack);
+    }
+
+    public static boolean isDefaultSoundPack() {
+        return SOUND_PACK_DEFAULT.equals(soundPack);
+    }
+
+    public static boolean setSoundPack(String pack) {
+        soundPack = sanitizeSoundPack(pack);
+        customSoundsEnabled = isTeleportSoundsEnabled();
+        return save();
+    }
+
+    private static String sanitizeSoundPack(String pack) {
+        if (pack != null) {
+            pack = pack.trim();
+        }
+        if (SOUND_PACK_GTA.equals(pack) || SOUND_PACK_DEFAULT.equals(pack) || SOUND_PACK_OFF.equals(pack)) {
+            return pack;
+        }
+        return SOUND_PACK_GTA;
+    }
+
+    private static void applySoundPackState() {
+        soundPack = sanitizeSoundPack(soundPack);
+        customSoundsEnabled = isTeleportSoundsEnabled();
+    }
+
+    public static boolean isShutterFlashEnabled() {
+        return enableShutterFlash;
+    }
+
+    public static boolean setShutterFlashEnabled(boolean enabled) {
+        enableShutterFlash = enabled;
+        return save();
+    }
+
+    public static boolean isVignetteEnabled() {
+        return enableVignette;
+    }
+
+    public static boolean setVignetteEnabled(boolean enabled) {
+        enableVignette = enabled;
+        return save();
+    }
+
+    public static boolean isInterferenceLinesEnabled() {
+        return enableInterferenceLines;
+    }
+
+    public static boolean setInterferenceLinesEnabled(boolean enabled) {
+        enableInterferenceLines = enabled;
+        return save();
+    }
+
+    public static String getFadeColor() {
+        return fadeColor;
+    }
+
+    public static boolean setFadeColor(String color) {
+        fadeColor = color;
+        return save();
+    }
+
+    public static boolean isVanillaTpEnabled() {
+        return enableVanillaTp;
+    }
+
+    public static boolean setVanillaTpEnabled(boolean enabled) {
+        enableVanillaTp = enabled;
+        return save();
+    }
+
+    public static boolean isWaystonesEnabled() {
+        return enableWaystones;
+    }
+
+    public static boolean setWaystonesEnabled(boolean enabled) {
+        enableWaystones = enabled;
+        return save();
+    }
+
+    public static boolean isJourneyMapEnabled() {
+        return enableJourneyMap;
+    }
+
+    public static boolean setJourneyMapEnabled(boolean enabled) {
+        enableJourneyMap = enabled;
+        return save();
+    }
+
+    public static boolean isPortalsEnabled() {
+        return enablePortals;
+    }
+
+    public static boolean setPortalsEnabled(boolean enabled) {
+        enablePortals = enabled;
+        return save();
+    }
+
+    public static boolean isSatelliteCameraFxEnabled() {
+        return enableSatelliteCameraFx;
+    }
+
+    public static boolean setSatelliteCameraFxEnabled(boolean enabled) {
+        enableSatelliteCameraFx = enabled;
+        return save();
+    }
+
+    public static double getSatelliteGammaStrength() {
+        return satelliteGammaStrength;
+    }
+
+    public static boolean setSatelliteGammaStrength(double value) {
+        satelliteGammaStrength = clamp(value, MIN_SATELLITE_GAMMA_STRENGTH, MAX_SATELLITE_GAMMA_STRENGTH);
+        return save();
+    }
+
+    public static double getSatelliteGammaDecayTicks() {
+        return satelliteGammaDecayTicks;
+    }
+
+    public static boolean setSatelliteGammaDecayTicks(double value) {
+        satelliteGammaDecayTicks = clamp(value, MIN_SATELLITE_GAMMA_DECAY_TICKS, MAX_SATELLITE_GAMMA_DECAY_TICKS);
+        return save();
+    }
+
+    public static double getSatelliteGammaOverlayLift() {
+        return satelliteGammaOverlayLift;
+    }
+
+    public static boolean setSatelliteGammaOverlayLift(double value) {
+        satelliteGammaOverlayLift = clamp(value, MIN_SATELLITE_UNIT, MAX_SATELLITE_UNIT);
+        return save();
+    }
+
+    public static double getSatelliteGammaBlowoutStrength() {
+        return satelliteGammaBlowoutStrength;
+    }
+
+    public static boolean setSatelliteGammaBlowoutStrength(double value) {
+        satelliteGammaBlowoutStrength = clamp(value, MIN_SATELLITE_UNIT, MAX_SATELLITE_UNIT);
+        return save();
+    }
+
+    public static double getSatelliteColorGradeMax() {
+        return satelliteColorGradeMax;
+    }
+
+    public static boolean setSatelliteColorGradeMax(double value) {
+        satelliteColorGradeMax = clamp(value, MIN_SATELLITE_UNIT, MAX_SATELLITE_UNIT);
+        return save();
+    }
+
+    public static double getSatellitePlungeExposureMax() {
+        return satellitePlungeExposureMax;
+    }
+
+    public static boolean setSatellitePlungeExposureMax(double value) {
+        satellitePlungeExposureMax = clamp(value, MIN_SATELLITE_UNIT, MAX_SATELLITE_UNIT);
+        return save();
+    }
+
+    public static double getSatelliteShaderExposureScale() {
+        return satelliteShaderExposureScale;
+    }
+
+    public static boolean setSatelliteShaderExposureScale(double value) {
+        satelliteShaderExposureScale = clamp(value, MIN_SATELLITE_SHADER_SCALE, MAX_SATELLITE_SHADER_SCALE);
+        return save();
+    }
+
+    public static double getMinSatelliteGammaStrength() {
+        return MIN_SATELLITE_GAMMA_STRENGTH;
+    }
+
+    public static double getMaxSatelliteGammaStrength() {
+        return MAX_SATELLITE_GAMMA_STRENGTH;
+    }
+
+    public static double getMinSatelliteGammaDecayTicks() {
+        return MIN_SATELLITE_GAMMA_DECAY_TICKS;
+    }
+
+    public static double getMaxSatelliteGammaDecayTicks() {
+        return MAX_SATELLITE_GAMMA_DECAY_TICKS;
+    }
+
+    public static void resetSatelliteCameraSettings() {
+        Properties defaults = createDefaultProperties();
+        enableSatelliteCameraFx = Boolean.parseBoolean(defaults.getProperty(
+                ENABLE_SATELLITE_CAMERA_FX_KEY,
+                Boolean.toString(enableSatelliteCameraFx)
+        ));
+        satelliteGammaStrength = readClampedDouble(
+                defaults,
+                SATELLITE_GAMMA_STRENGTH_KEY,
+                satelliteGammaStrength,
+                MIN_SATELLITE_GAMMA_STRENGTH,
+                MAX_SATELLITE_GAMMA_STRENGTH
+        );
+        satelliteGammaDecayTicks = readClampedDouble(
+                defaults,
+                SATELLITE_GAMMA_DECAY_TICKS_KEY,
+                satelliteGammaDecayTicks,
+                MIN_SATELLITE_GAMMA_DECAY_TICKS,
+                MAX_SATELLITE_GAMMA_DECAY_TICKS
+        );
+        satelliteGammaOverlayLift = readClampedDouble(
+                defaults,
+                SATELLITE_GAMMA_OVERLAY_LIFT_KEY,
+                satelliteGammaOverlayLift,
+                MIN_SATELLITE_UNIT,
+                MAX_SATELLITE_UNIT
+        );
+        satelliteGammaBlowoutStrength = readClampedDouble(
+                defaults,
+                SATELLITE_GAMMA_BLOWOUT_STRENGTH_KEY,
+                satelliteGammaBlowoutStrength,
+                MIN_SATELLITE_UNIT,
+                MAX_SATELLITE_UNIT
+        );
+        satelliteColorGradeMax = readClampedDouble(
+                defaults,
+                SATELLITE_COLOR_GRADE_MAX_KEY,
+                satelliteColorGradeMax,
+                MIN_SATELLITE_UNIT,
+                MAX_SATELLITE_UNIT
+        );
+        satellitePlungeExposureMax = readClampedDouble(
+                defaults,
+                SATELLITE_PLUNGE_EXPOSURE_MAX_KEY,
+                satellitePlungeExposureMax,
+                MIN_SATELLITE_UNIT,
+                MAX_SATELLITE_UNIT
+        );
+        satelliteShaderExposureScale = readClampedDouble(
+                defaults,
+                SATELLITE_SHADER_EXPOSURE_SCALE_KEY,
+                satelliteShaderExposureScale,
+                MIN_SATELLITE_SHADER_SCALE,
+                MAX_SATELLITE_SHADER_SCALE
+        );
+        save();
+    }
+
+    public static void applyPreset(String preset) {
+        transitionPreset = preset;
+        if ("fast".equals(preset)) {
+            zoomOutStageTicks = new int[]{5, 5, 5};
+            zoomInStageTicks = new int[]{5, 5, 5};
+            zoomStageGlideTicks = 5;
+            bodyGlideTicks = 5;
+            zoomOutStageHeights = new double[]{20, 50, 100};
+            zoomInStageHeights = new double[]{20, 50, 100};
+            netherZoomOutStageHeights = new double[]{20, 50, 100};
+            netherZoomInStageHeights = new double[]{20, 50, 100};
+            endZoomOutStageHeights = new double[]{20, 50, 100};
+            endZoomInStageHeights = new double[]{20, 50, 100};
+        } else if ("slow".equals(preset)) {
+            zoomOutStageTicks = new int[]{25, 25, 25};
+            zoomInStageTicks = new int[]{25, 25, 25};
+            zoomStageGlideTicks = 30;
+            bodyGlideTicks = 20;
+            zoomOutStageHeights = new double[]{50, 120, 250};
+            zoomInStageHeights = new double[]{50, 120, 250};
+            netherZoomOutStageHeights = new double[]{40, 80, 120};
+            netherZoomInStageHeights = new double[]{40, 80, 120};
+            endZoomOutStageHeights = new double[]{50, 120, 250};
+            endZoomInStageHeights = new double[]{50, 120, 250};
+        } else {
+            zoomOutStageTicks = DEFAULT_STAGE_TICKS.clone();
+            zoomInStageTicks = DEFAULT_STAGE_TICKS.clone();
+            zoomStageGlideTicks = DEFAULT_ZOOM_STAGE_GLIDE_TICKS;
+            bodyGlideTicks = DEFAULT_BODY_GLIDE_TICKS;
+            zoomOutStageHeights = DEFAULT_STAGE_HEIGHTS.clone();
+            zoomInStageHeights = DEFAULT_STAGE_HEIGHTS.clone();
+            netherZoomOutStageHeights = DEFAULT_STAGE_HEIGHTS.clone();
+            netherZoomInStageHeights = DEFAULT_STAGE_HEIGHTS.clone();
+            endZoomOutStageHeights = DEFAULT_STAGE_HEIGHTS.clone();
+            endZoomInStageHeights = DEFAULT_STAGE_HEIGHTS.clone();
+        }
+        save();
     }
 
     public static boolean isPlayerFreezeEnabled() {
@@ -753,7 +765,12 @@ zoomStageGlideTicks=13
     }
 
     static boolean setCustomSoundsEnabled(boolean enabled) {
-        customSoundsEnabled = enabled;
+        if (!enabled) {
+            soundPack = SOUND_PACK_OFF;
+        } else if (SOUND_PACK_OFF.equals(soundPack)) {
+            soundPack = SOUND_PACK_GTA;
+        }
+        customSoundsEnabled = isTeleportSoundsEnabled();
         return save();
     }
 
@@ -802,7 +819,7 @@ zoomStageGlideTicks=13
         return save();
     }
 
-    static double[] sanitizeStageHeights(double[] values) {
+    public static double[] sanitizeStageHeights(double[] values) {
         double[] source = values == null || values.length < 3 ? DEFAULT_STAGE_HEIGHTS : values;
         double[] sanitized = new double[3];
         sanitized[0] = clamp(roundStageHeight(source[0]), MIN_STAGE_HEIGHT, MAX_STAGE_HEIGHT - MIN_STAGE_GAP * 2.0D);
@@ -844,15 +861,15 @@ zoomStageGlideTicks=13
         return Math.round(clamp(value, MIN_SOUND_VOLUME, MAX_SOUND_VOLUME) * 10.0D) / 10.0D;
     }
 
-    static double getMinStageHeight() {
+    public static double getMinStageHeight() {
         return MIN_STAGE_HEIGHT;
     }
 
-    static double getMaxStageHeight() {
+    public static double getMaxStageHeight() {
         return MAX_STAGE_HEIGHT;
     }
 
-    static double getMinStageGap() {
+    public static double getMinStageGap() {
         return MIN_STAGE_GAP;
     }
 
@@ -1217,6 +1234,70 @@ zoomStageGlideTicks=13
         configLayoutHeight = readUnitDouble(properties, CONFIG_LAYOUT_HEIGHT_KEY, configLayoutHeight);
         configLayoutBaseWidth = readPositiveInt(properties, CONFIG_LAYOUT_BASE_WIDTH_KEY, configLayoutBaseWidth);
         configLayoutBaseHeight = readPositiveInt(properties, CONFIG_LAYOUT_BASE_HEIGHT_KEY, configLayoutBaseHeight);
+        transitionPreset = properties.getProperty(TRANSITION_PRESET_KEY, transitionPreset);
+        soundPack = sanitizeSoundPack(properties.getProperty(SOUND_PACK_KEY, soundPack));
+        applySoundPackState();
+        enableShutterFlash = Boolean.parseBoolean(properties.getProperty(ENABLE_SHUTTER_FLASH_KEY, Boolean.toString(enableShutterFlash)));
+        enableVignette = Boolean.parseBoolean(properties.getProperty(ENABLE_VIGNETTE_KEY, Boolean.toString(enableVignette)));
+        enableInterferenceLines = Boolean.parseBoolean(properties.getProperty(ENABLE_INTERFERENCE_LINES_KEY, Boolean.toString(enableInterferenceLines)));
+        fadeColor = properties.getProperty(FADE_COLOR_KEY, fadeColor);
+        enableVanillaTp = Boolean.parseBoolean(properties.getProperty(ENABLE_VANILLA_TP_KEY, Boolean.toString(enableVanillaTp)));
+        enableWaystones = Boolean.parseBoolean(properties.getProperty(ENABLE_WAYSTONES_KEY, Boolean.toString(enableWaystones)));
+        enableJourneyMap = Boolean.parseBoolean(properties.getProperty(ENABLE_JOURNEYMAP_KEY, Boolean.toString(enableJourneyMap)));
+        enablePortals = Boolean.parseBoolean(properties.getProperty(ENABLE_PORTALS_KEY, Boolean.toString(enablePortals)));
+        enableSatelliteCameraFx = Boolean.parseBoolean(properties.getProperty(
+                ENABLE_SATELLITE_CAMERA_FX_KEY,
+                Boolean.toString(enableSatelliteCameraFx)
+        ));
+        satelliteGammaStrength = readClampedDouble(
+                properties,
+                SATELLITE_GAMMA_STRENGTH_KEY,
+                satelliteGammaStrength,
+                MIN_SATELLITE_GAMMA_STRENGTH,
+                MAX_SATELLITE_GAMMA_STRENGTH
+        );
+        satelliteGammaDecayTicks = readClampedDouble(
+                properties,
+                SATELLITE_GAMMA_DECAY_TICKS_KEY,
+                satelliteGammaDecayTicks,
+                MIN_SATELLITE_GAMMA_DECAY_TICKS,
+                MAX_SATELLITE_GAMMA_DECAY_TICKS
+        );
+        satelliteGammaOverlayLift = readClampedDouble(
+                properties,
+                SATELLITE_GAMMA_OVERLAY_LIFT_KEY,
+                satelliteGammaOverlayLift,
+                MIN_SATELLITE_UNIT,
+                MAX_SATELLITE_UNIT
+        );
+        satelliteGammaBlowoutStrength = readClampedDouble(
+                properties,
+                SATELLITE_GAMMA_BLOWOUT_STRENGTH_KEY,
+                satelliteGammaBlowoutStrength,
+                MIN_SATELLITE_UNIT,
+                MAX_SATELLITE_UNIT
+        );
+        satelliteColorGradeMax = readClampedDouble(
+                properties,
+                SATELLITE_COLOR_GRADE_MAX_KEY,
+                satelliteColorGradeMax,
+                MIN_SATELLITE_UNIT,
+                MAX_SATELLITE_UNIT
+        );
+        satellitePlungeExposureMax = readClampedDouble(
+                properties,
+                SATELLITE_PLUNGE_EXPOSURE_MAX_KEY,
+                satellitePlungeExposureMax,
+                MIN_SATELLITE_UNIT,
+                MAX_SATELLITE_UNIT
+        );
+        satelliteShaderExposureScale = readClampedDouble(
+                properties,
+                SATELLITE_SHADER_EXPOSURE_SCALE_KEY,
+                satelliteShaderExposureScale,
+                MIN_SATELLITE_SHADER_SCALE,
+                MAX_SATELLITE_SHADER_SCALE
+        );
         readWidgetLayouts(properties);
         readConfigTexts(properties);
     }
@@ -1291,6 +1372,60 @@ zoomStageGlideTicks=13
             }
         }
     }
+    private static int readConfigVersion(Properties properties) {
+        try {
+            return Integer.parseInt(properties.getProperty(CONFIG_VERSION_KEY, "0"));
+        } catch (NumberFormatException ignored) {
+            return 0;
+        }
+    }
+
+    private static void applyConfigVersionMigration(Properties properties, int previousVersion) {
+        if (previousVersion < 5) {
+            properties.setProperty(CUSTOM_SOUNDS_ENABLED_KEY, "true");
+            properties.setProperty(SOUND_PACK_KEY, "gta");
+            properties.setProperty(ENABLE_SATELLITE_CAMERA_FX_KEY, "false");
+            properties.setProperty(ENABLE_SHUTTER_FLASH_KEY, "false");
+            properties.setProperty(ENABLE_VIGNETTE_KEY, "false");
+        }
+        if (previousVersion < 6) {
+            properties.setProperty(ENABLE_INTERFERENCE_LINES_KEY, "false");
+        }
+        if (previousVersion < 7) {
+            if (!Boolean.parseBoolean(properties.getProperty(CUSTOM_SOUNDS_ENABLED_KEY, "true"))) {
+                properties.setProperty(SOUND_PACK_KEY, SOUND_PACK_OFF);
+                properties.setProperty(CUSTOM_SOUNDS_ENABLED_KEY, "false");
+            } else {
+                properties.setProperty(SOUND_PACK_KEY, sanitizeSoundPack(properties.getProperty(SOUND_PACK_KEY, SOUND_PACK_GTA)));
+                properties.setProperty(CUSTOM_SOUNDS_ENABLED_KEY, "true");
+            }
+        }
+        if (previousVersion < 8) {
+            syncSoundPackProperties(properties);
+        }
+    }
+
+    private static void syncSoundPackProperties(Properties properties) {
+        String pack = sanitizeSoundPack(properties.getProperty(SOUND_PACK_KEY, SOUND_PACK_GTA));
+        if (!Boolean.parseBoolean(properties.getProperty(CUSTOM_SOUNDS_ENABLED_KEY, "true"))) {
+            pack = SOUND_PACK_OFF;
+        }
+        properties.setProperty(SOUND_PACK_KEY, pack);
+        properties.setProperty(CUSTOM_SOUNDS_ENABLED_KEY, Boolean.toString(isTeleportSoundPackEnabled(pack)));
+    }
+
+    private static boolean isTeleportSoundPackEnabled(String pack) {
+        return !SOUND_PACK_OFF.equals(pack);
+    }
+
+    private static boolean needsLayoutCleanup(Properties properties) {
+        if (Boolean.parseBoolean(properties.getProperty(CONFIG_LAYOUT_CUSTOM_KEY, "false"))) {
+            return true;
+        }
+        return hasPropertyWithPrefix(properties, CONFIG_WIDGET_PREFIX)
+                || hasPropertyWithPrefix(properties, CONFIG_TEXT_PREFIX);
+    }
+
     private static boolean prepareLoadedProperties(Properties properties) {
         if (!isLegacyCompactLayoutConfig(properties)) {
             return false;
@@ -1418,11 +1553,30 @@ zoomStageGlideTicks=13
         properties.setProperty(WARP_PLATE_TRANSITIONS_ENABLED_KEY, Boolean.toString(warpPlateTransitionsEnabled));
         properties.setProperty(EXTERNAL_TELEPORT_TRANSITIONS_ENABLED_KEY, Boolean.toString(externalTeleportTransitionsEnabled));
         properties.setProperty(FALLBACK_CHUNK_FADE_ENABLED_KEY, Boolean.toString(fallbackChunkFadeEnabled));
+        properties.setProperty(TRANSITION_PRESET_KEY, transitionPreset);
+        properties.setProperty(SOUND_PACK_KEY, soundPack);
+        properties.setProperty(ENABLE_SHUTTER_FLASH_KEY, Boolean.toString(enableShutterFlash));
+        properties.setProperty(ENABLE_VIGNETTE_KEY, Boolean.toString(enableVignette));
+        properties.setProperty(ENABLE_INTERFERENCE_LINES_KEY, Boolean.toString(enableInterferenceLines));
+        properties.setProperty(FADE_COLOR_KEY, fadeColor);
+        properties.setProperty(ENABLE_VANILLA_TP_KEY, Boolean.toString(enableVanillaTp));
+        properties.setProperty(ENABLE_WAYSTONES_KEY, Boolean.toString(enableWaystones));
+        properties.setProperty(ENABLE_JOURNEYMAP_KEY, Boolean.toString(enableJourneyMap));
+        properties.setProperty(ENABLE_PORTALS_KEY, Boolean.toString(enablePortals));
+        properties.setProperty(ENABLE_SATELLITE_CAMERA_FX_KEY, Boolean.toString(enableSatelliteCameraFx));
+        properties.setProperty(SATELLITE_GAMMA_STRENGTH_KEY, Double.toString(satelliteGammaStrength));
+        properties.setProperty(SATELLITE_GAMMA_DECAY_TICKS_KEY, Double.toString(satelliteGammaDecayTicks));
+        properties.setProperty(SATELLITE_GAMMA_OVERLAY_LIFT_KEY, Double.toString(satelliteGammaOverlayLift));
+        properties.setProperty(SATELLITE_GAMMA_BLOWOUT_STRENGTH_KEY, Double.toString(satelliteGammaBlowoutStrength));
+        properties.setProperty(SATELLITE_COLOR_GRADE_MAX_KEY, Double.toString(satelliteColorGradeMax));
+        properties.setProperty(SATELLITE_PLUNGE_EXPOSURE_MAX_KEY, Double.toString(satellitePlungeExposureMax));
+        properties.setProperty(SATELLITE_SHADER_EXPOSURE_SCALE_KEY, Double.toString(satelliteShaderExposureScale));
         properties.setProperty(CONFIG_LAYOUT_EDITOR_BUTTON_VISIBLE_KEY, Boolean.toString(configLayoutEditorButtonVisible));
         properties.setProperty(CONFIG_LAYOUT_DEBUG_ENABLED_KEY, Boolean.toString(configLayoutDebugEnabled));
         properties.setProperty(CONFIG_LAYOUT_ASPECT_LOCKED_KEY, Boolean.toString(configLayoutAspectLocked));
         properties.setProperty(CONFIG_LAYOUT_GRID_ENABLED_KEY, Boolean.toString(configLayoutGridEnabled));
         properties.setProperty(CONFIG_LAYOUT_SNAP_ENABLED_KEY, Boolean.toString(configLayoutSnapEnabled));
+        properties.setProperty(CONFIG_VERSION_KEY, Integer.toString(CURRENT_CONFIG_VERSION));
         properties.setProperty(CONFIG_LAYOUT_CUSTOM_KEY, Boolean.toString(configLayoutCustom));
         properties.setProperty(CONFIG_LAYOUT_X_KEY, Double.toString(configLayoutX));
         properties.setProperty(CONFIG_LAYOUT_Y_KEY, Double.toString(configLayoutY));
@@ -1452,7 +1606,8 @@ zoomStageGlideTicks=13
                 properties.store(output, "Grand Teleport client settings");
             }
             return true;
-        } catch (IOException ignored) {
+        } catch (IOException exception) {
+            GtaLikeTeleport.LOGGER.error("Failed to save Grand Teleport config to {}", configPath, exception);
             return false;
         }
     }
@@ -1481,12 +1636,12 @@ zoomStageGlideTicks=13
         return dimension == null ? ZoomDimension.OVERWORLD : dimension;
     }
 
-    enum ZoomDimension {
+    public enum ZoomDimension {
         OVERWORLD,
         NETHER,
         END;
 
-        static ZoomDimension fromLevel(ResourceKey<Level> dimension) {
+        public static ZoomDimension fromLevel(ResourceKey<Level> dimension) {
             if (Level.NETHER.equals(dimension)) {
                 return NETHER;
             }

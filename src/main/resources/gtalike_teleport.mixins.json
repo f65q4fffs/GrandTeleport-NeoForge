@@ -13,10 +13,14 @@
     "ClientPacketListenerMixin",
     "ConnectionMixin",
     "EntityRendererMixin",
+    "GameRendererAccessor",
+    "GameRendererMixin",
     "JourneyMapClientNetworkDispatcherMixin",
     "LevelRendererMixin",
     "MinecraftMixin",
-    "MouseHandlerMixin"
+    "MouseHandlerMixin",
+    "PostChainAccessor",
+    "PostPassAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

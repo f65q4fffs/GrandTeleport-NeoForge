@@ -125,13 +125,40 @@ public final class GtaLikeTeleportServer {
         if (!GtaLikeTeleportConfig.isEffectEnabled()) {
             return false;
         }
-        if (source == GtaLikeTeleportNetworkPayloads.SOURCE_EXTERNAL && !GtaLikeTeleportConfig.isExternalTeleportTransitionsEnabled()) {
-            return false;
+        if (source == GtaLikeTeleportNetworkPayloads.SOURCE_EXTERNAL) {
+            if (!GtaLikeTeleportConfig.isExternalTeleportTransitionsEnabled()) {
+                return false;
+            }
+            if (isPortalTeleport(player) && !GtaLikeTeleportConfig.isPortalsEnabled()) {
+                return false;
+            }
         }
-        if (source == GtaLikeTeleportNetworkPayloads.SOURCE_WARP_PLATE && !GtaLikeTeleportConfig.isWarpPlateTransitionsEnabled()) {
+        if (source == GtaLikeTeleportNetworkPayloads.SOURCE_WARP_PLATE && (!GtaLikeTeleportConfig.isWarpPlateTransitionsEnabled() || !GtaLikeTeleportConfig.isWaystonesEnabled())) {
             return false;
         }
         return GtaLikeTeleportServerNetworking.canSendStart(player);
+    }
+
+    private static boolean isPortalTeleport(ServerPlayer player) {
+        if (player == null) {
+            return false;
+        }
+        net.minecraft.core.BlockPos pos = player.blockPosition();
+        net.minecraft.world.level.Level level = player.level();
+        return isPortalBlock(level, pos) || isPortalBlock(level, pos.above()) || isPortalBlock(level, pos.below());
+    }
+
+    private static boolean isPortalBlock(net.minecraft.world.level.Level level, net.minecraft.core.BlockPos pos) {
+        net.minecraft.world.level.block.state.BlockState state = level.getBlockState(pos);
+        if (state.isAir()) {
+            return false;
+        }
+        net.minecraft.resources.ResourceLocation key = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(state.getBlock());
+        if (key != null) {
+            String path = key.getPath().toLowerCase();
+            return path.contains("portal") || path.contains("teleport");
+        }
+        return false;
     }
 
     private static boolean consumeServerTeleportBypass(ServerPlayer player) {

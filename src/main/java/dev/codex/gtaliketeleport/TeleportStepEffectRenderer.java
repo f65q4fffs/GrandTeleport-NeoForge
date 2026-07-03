@@ -1,5 +1,6 @@
 package dev.codex.gtaliketeleport;
 
+
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
@@ -23,6 +24,7 @@ public final class TeleportStepEffectRenderer {
     public static void render(GuiGraphics context, float tickProgress) {
         updateStartMaskColorCapture();
 
+        // Rendu des masques et flashs de transition par défaut
         boolean shaderScreenMaskOnly = TeleportTransitionController.shouldUseShaderScreenMaskOnly();
         float maskIntensity = TeleportTransitionController.getShaderScreenMaskIntensity(tickProgress);
         if (maskIntensity > 0.0F) {
@@ -36,7 +38,9 @@ public final class TeleportStepEffectRenderer {
             intensity = TeleportTransitionController.getStepEffectIntensity(tickProgress);
             intensity = Math.max(intensity, TeleportTransitionController.getHudFadeOverlayIntensity(tickProgress));
         }
-        renderStepFlash(context, intensity);
+        if (GtaLikeTeleportConfig.isShutterFlashEnabled()) {
+            renderStepFlash(context, intensity);
+        }
     }
 
     private static void renderStepFlash(GuiGraphics context, float intensity) {

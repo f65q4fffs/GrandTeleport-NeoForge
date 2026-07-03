@@ -11,7 +11,7 @@ final class IrisCompat {
         return isShaderPackInUse();
     }
 
-    private static boolean isShaderPackInUse() {
+    static boolean isShaderPackInUse() {
         try {
             Class<?> apiClass = Class.forName("net.irisshaders.iris.api.v0.IrisApi");
             Method getInstance = apiClass.getMethod("getInstance");

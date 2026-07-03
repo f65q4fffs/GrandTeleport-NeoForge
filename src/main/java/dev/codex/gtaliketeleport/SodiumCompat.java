@@ -1,6 +1,7 @@
 package dev.codex.gtaliketeleport;
 
 import net.minecraft.client.Minecraft;
+import net.neoforged.fml.ModList;
 
 import java.lang.reflect.Method;
 
@@ -8,6 +9,12 @@ final class SodiumCompat {
     private static boolean active;
 
     private SodiumCompat() {
+    }
+
+    static boolean isLoaded() {
+        return ModList.get().isLoaded("sodium")
+                || ModList.get().isLoaded("rubidium")
+                || ModList.get().isLoaded("embeddium");
     }
 
     static void beginTransition(Minecraft client, boolean fallbackTerrainMode) {
