@@ -1,10 +1,8 @@
 {
     "blend": {
         "func": "add",
-        "srcrgb": "one",
-        "dstrgb": "zero",
-        "srcalpha": "one",
-        "dstalpha": "zero"
+        "srcrgb": "srcalpha",
+        "dstrgb": "1-srcalpha"
     },
     "vertex": "gtalike_teleport:satellite_camera",
     "fragment": "gtalike_teleport:satellite_camera",

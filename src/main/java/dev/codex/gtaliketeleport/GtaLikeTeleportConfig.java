@@ -58,6 +58,9 @@ public final class GtaLikeTeleportConfig {
     private static final String CONFIG_TEXT_PREFIX = "configText.";
     private static final String TRANSITION_PRESET_KEY = "transitionPreset";
     private static final String SOUND_PACK_KEY = "soundPack";
+    public static final String SOUND_PACK_GTA = "gta";
+    public static final String SOUND_PACK_DEFAULT = "default";
+    public static final String SOUND_PACK_OFF = "off";
     private static final String ENABLE_SHUTTER_FLASH_KEY = "enableShutterFlash";
     private static final String ENABLE_VIGNETTE_KEY = "enableVignette";
     private static final String ENABLE_INTERFERENCE_LINES_KEY = "enableInterferenceLines";
@@ -66,16 +69,47 @@ public final class GtaLikeTeleportConfig {
     private static final String ENABLE_WAYSTONES_KEY = "enableWaystones";
     private static final String ENABLE_JOURNEYMAP_KEY = "enableJourneyMap";
     private static final String ENABLE_PORTALS_KEY = "enablePortals";
-    private static final int CURRENT_CONFIG_VERSION = 3;
+    private static final String ENABLE_SATELLITE_CAMERA_FX_KEY = "enableSatelliteCameraFx";
+    private static final String SATELLITE_GAMMA_STRENGTH_KEY = "satelliteGammaStrength";
+    private static final String SATELLITE_GAMMA_DECAY_TICKS_KEY = "satelliteGammaDecayTicks";
+    private static final String SATELLITE_GAMMA_OVERLAY_LIFT_KEY = "satelliteGammaOverlayLift";
+    private static final String SATELLITE_GAMMA_BLOWOUT_STRENGTH_KEY = "satelliteGammaBlowoutStrength";
+    private static final String SATELLITE_COLOR_GRADE_MAX_KEY = "satelliteColorGradeMax";
+    private static final String SATELLITE_PLUNGE_EXPOSURE_MAX_KEY = "satellitePlungeExposureMax";
+    private static final String SATELLITE_SHADER_EXPOSURE_SCALE_KEY = "satelliteShaderExposureScale";
+    private static final double DEFAULT_SATELLITE_GAMMA_STRENGTH = 2.0D;
+    private static final double MIN_SATELLITE_GAMMA_STRENGTH = 0.1D;
+    private static final double MAX_SATELLITE_GAMMA_STRENGTH = 4.0D;
+    private static final double DEFAULT_SATELLITE_GAMMA_DECAY_TICKS = 6.0D;
+    private static final double MIN_SATELLITE_GAMMA_DECAY_TICKS = 2.0D;
+    private static final double MAX_SATELLITE_GAMMA_DECAY_TICKS = 15.0D;
+    private static final double DEFAULT_SATELLITE_GAMMA_OVERLAY_LIFT = 0.55D;
+    private static final double DEFAULT_SATELLITE_GAMMA_BLOWOUT_STRENGTH = 0.65D;
+    private static final double DEFAULT_SATELLITE_COLOR_GRADE_MAX = 0.38D;
+    private static final double DEFAULT_SATELLITE_PLUNGE_EXPOSURE_MAX = 0.6D;
+    private static final double DEFAULT_SATELLITE_SHADER_EXPOSURE_SCALE = 1.25D;
+    private static final double MIN_SATELLITE_UNIT = 0.0D;
+    private static final double MAX_SATELLITE_UNIT = 1.0D;
+    private static final double MIN_SATELLITE_SHADER_SCALE = 0.0D;
+    private static final double MAX_SATELLITE_SHADER_SCALE = 3.0D;
+    private static final int CURRENT_CONFIG_VERSION = 8;
     private static final String CONFIG_VERSION_KEY = "configVersion";
     private static final String DEFAULT_CONFIG_PROPERTIES = """
-configVersion=3
+configVersion=8
+enableSatelliteCameraFx=false
+satelliteGammaStrength=2.0
+satelliteGammaDecayTicks=6.0
+satelliteGammaOverlayLift=0.55
+satelliteGammaBlowoutStrength=0.65
+satelliteColorGradeMax=0.38
+satellitePlungeExposureMax=0.6
+satelliteShaderExposureScale=1.25
 bodyCameraHeight=6.0
 transitionPreset=classic
-soundPack=default
-enableShutterFlash=true
-enableVignette=true
-enableInterferenceLines=true
+soundPack=gta
+enableShutterFlash=false
+enableVignette=false
+enableInterferenceLines=false
 fadeColor=black
 enableVanillaTp=true
 enableWaystones=true
@@ -93,7 +127,7 @@ configLayoutGridEnabled=true
 configLayoutSnapEnabled=false
 crossDimensionTravelEnabled=false
 customSoundVolume=0.5
-customSoundsEnabled=false
+customSoundsEnabled=true
 effectEnabled=true
 endZoomHeightsLinked=true
 endZoomInStage1=20
@@ -178,7 +212,7 @@ zoomStageGlideTicks=13
     private static double bodyGlideHeight = DEFAULT_BODY_GLIDE_HEIGHT;
     private static int bodyGlideTicks = DEFAULT_BODY_GLIDE_TICKS;
     private static int localPlayerHideTicks = DEFAULT_LOCAL_PLAYER_HIDE_TICKS;
-    private static boolean customSoundsEnabled = false;
+    private static boolean customSoundsEnabled = true;
     private static double minecraftSoundVolume = DEFAULT_MINECRAFT_SOUND_VOLUME;
     private static double customSoundVolume = DEFAULT_CUSTOM_SOUND_VOLUME;
     private static boolean warpPlateTransitionsEnabled = true;
@@ -191,15 +225,23 @@ zoomStageGlideTicks=13
     private static boolean configLayoutSnapEnabled = true;
     private static boolean configLayoutCustom = false;
     private static String transitionPreset = "classic";
-    private static String soundPack = "default";
-    private static boolean enableShutterFlash = true;
-    private static boolean enableVignette = true;
-    private static boolean enableInterferenceLines = true;
+    private static String soundPack = "gta";
+    private static boolean enableShutterFlash = false;
+    private static boolean enableVignette = false;
+    private static boolean enableInterferenceLines = false;
     private static String fadeColor = "black";
     private static boolean enableVanillaTp = true;
     private static boolean enableWaystones = true;
     private static boolean enableJourneyMap = true;
     private static boolean enablePortals = true;
+    private static boolean enableSatelliteCameraFx = false;
+    private static double satelliteGammaStrength = DEFAULT_SATELLITE_GAMMA_STRENGTH;
+    private static double satelliteGammaDecayTicks = DEFAULT_SATELLITE_GAMMA_DECAY_TICKS;
+    private static double satelliteGammaOverlayLift = DEFAULT_SATELLITE_GAMMA_OVERLAY_LIFT;
+    private static double satelliteGammaBlowoutStrength = DEFAULT_SATELLITE_GAMMA_BLOWOUT_STRENGTH;
+    private static double satelliteColorGradeMax = DEFAULT_SATELLITE_COLOR_GRADE_MAX;
+    private static double satellitePlungeExposureMax = DEFAULT_SATELLITE_PLUNGE_EXPOSURE_MAX;
+    private static double satelliteShaderExposureScale = DEFAULT_SATELLITE_SHADER_EXPOSURE_SCALE;
     private static double configLayoutX = 0.0D;
     private static double configLayoutY = 0.0D;
     private static double configLayoutWidth = 0.0D;
@@ -215,9 +257,10 @@ zoomStageGlideTicks=13
     public static void load() {
         configPath = resolveConfigPath();
         migrateLegacyConfig();
-        resetToDefaults();
 
         if (!Files.exists(configPath)) {
+            resetToDefaults();
+            save();
             return;
         }
 
@@ -227,16 +270,19 @@ zoomStageGlideTicks=13
             properties.load(input);
             int version = readConfigVersion(properties);
             if (version < CURRENT_CONFIG_VERSION) {
-                if (needsLayoutCleanup(properties)) {
+                if (version < 7 || needsLayoutCleanup(properties)) {
                     restoreDefaultLayoutProperties(properties);
                 }
+                applyConfigVersionMigration(properties, version);
                 properties.setProperty(CONFIG_VERSION_KEY, Integer.toString(CURRENT_CONFIG_VERSION));
                 rewriteConfig = true;
             }
             rewriteConfig = prepareLoadedProperties(properties) || rewriteConfig;
             applyConfigProperties(properties);
+            applySoundPackState();
             rewriteConfig = rewriteConfig || !properties.containsKey(CONFIG_LAYOUT_EDITOR_BUTTON_VISIBLE_KEY);
-        } catch (IOException ignored) {
+        } catch (IOException exception) {
+            GtaLikeTeleport.LOGGER.warn("Failed to load Grand Teleport config, using defaults.", exception);
             resetToDefaults();
         }
         if (rewriteConfig) {
@@ -266,9 +312,37 @@ zoomStageGlideTicks=13
         return soundPack;
     }
 
+    public static boolean isTeleportSoundsEnabled() {
+        return !SOUND_PACK_OFF.equals(soundPack);
+    }
+
+    public static boolean isGtaSoundPack() {
+        return SOUND_PACK_GTA.equals(soundPack);
+    }
+
+    public static boolean isDefaultSoundPack() {
+        return SOUND_PACK_DEFAULT.equals(soundPack);
+    }
+
     public static boolean setSoundPack(String pack) {
-        soundPack = pack;
+        soundPack = sanitizeSoundPack(pack);
+        customSoundsEnabled = isTeleportSoundsEnabled();
         return save();
+    }
+
+    private static String sanitizeSoundPack(String pack) {
+        if (pack != null) {
+            pack = pack.trim();
+        }
+        if (SOUND_PACK_GTA.equals(pack) || SOUND_PACK_DEFAULT.equals(pack) || SOUND_PACK_OFF.equals(pack)) {
+            return pack;
+        }
+        return SOUND_PACK_GTA;
+    }
+
+    private static void applySoundPackState() {
+        soundPack = sanitizeSoundPack(soundPack);
+        customSoundsEnabled = isTeleportSoundsEnabled();
     }
 
     public static boolean isShutterFlashEnabled() {
@@ -341,6 +415,152 @@ zoomStageGlideTicks=13
     public static boolean setPortalsEnabled(boolean enabled) {
         enablePortals = enabled;
         return save();
+    }
+
+    public static boolean isSatelliteCameraFxEnabled() {
+        return enableSatelliteCameraFx;
+    }
+
+    public static boolean setSatelliteCameraFxEnabled(boolean enabled) {
+        enableSatelliteCameraFx = enabled;
+        return save();
+    }
+
+    public static double getSatelliteGammaStrength() {
+        return satelliteGammaStrength;
+    }
+
+    public static boolean setSatelliteGammaStrength(double value) {
+        satelliteGammaStrength = clamp(value, MIN_SATELLITE_GAMMA_STRENGTH, MAX_SATELLITE_GAMMA_STRENGTH);
+        return save();
+    }
+
+    public static double getSatelliteGammaDecayTicks() {
+        return satelliteGammaDecayTicks;
+    }
+
+    public static boolean setSatelliteGammaDecayTicks(double value) {
+        satelliteGammaDecayTicks = clamp(value, MIN_SATELLITE_GAMMA_DECAY_TICKS, MAX_SATELLITE_GAMMA_DECAY_TICKS);
+        return save();
+    }
+
+    public static double getSatelliteGammaOverlayLift() {
+        return satelliteGammaOverlayLift;
+    }
+
+    public static boolean setSatelliteGammaOverlayLift(double value) {
+        satelliteGammaOverlayLift = clamp(value, MIN_SATELLITE_UNIT, MAX_SATELLITE_UNIT);
+        return save();
+    }
+
+    public static double getSatelliteGammaBlowoutStrength() {
+        return satelliteGammaBlowoutStrength;
+    }
+
+    public static boolean setSatelliteGammaBlowoutStrength(double value) {
+        satelliteGammaBlowoutStrength = clamp(value, MIN_SATELLITE_UNIT, MAX_SATELLITE_UNIT);
+        return save();
+    }
+
+    public static double getSatelliteColorGradeMax() {
+        return satelliteColorGradeMax;
+    }
+
+    public static boolean setSatelliteColorGradeMax(double value) {
+        satelliteColorGradeMax = clamp(value, MIN_SATELLITE_UNIT, MAX_SATELLITE_UNIT);
+        return save();
+    }
+
+    public static double getSatellitePlungeExposureMax() {
+        return satellitePlungeExposureMax;
+    }
+
+    public static boolean setSatellitePlungeExposureMax(double value) {
+        satellitePlungeExposureMax = clamp(value, MIN_SATELLITE_UNIT, MAX_SATELLITE_UNIT);
+        return save();
+    }
+
+    public static double getSatelliteShaderExposureScale() {
+        return satelliteShaderExposureScale;
+    }
+
+    public static boolean setSatelliteShaderExposureScale(double value) {
+        satelliteShaderExposureScale = clamp(value, MIN_SATELLITE_SHADER_SCALE, MAX_SATELLITE_SHADER_SCALE);
+        return save();
+    }
+
+    public static double getMinSatelliteGammaStrength() {
+        return MIN_SATELLITE_GAMMA_STRENGTH;
+    }
+
+    public static double getMaxSatelliteGammaStrength() {
+        return MAX_SATELLITE_GAMMA_STRENGTH;
+    }
+
+    public static double getMinSatelliteGammaDecayTicks() {
+        return MIN_SATELLITE_GAMMA_DECAY_TICKS;
+    }
+
+    public static double getMaxSatelliteGammaDecayTicks() {
+        return MAX_SATELLITE_GAMMA_DECAY_TICKS;
+    }
+
+    public static void resetSatelliteCameraSettings() {
+        Properties defaults = createDefaultProperties();
+        enableSatelliteCameraFx = Boolean.parseBoolean(defaults.getProperty(
+                ENABLE_SATELLITE_CAMERA_FX_KEY,
+                Boolean.toString(enableSatelliteCameraFx)
+        ));
+        satelliteGammaStrength = readClampedDouble(
+                defaults,
+                SATELLITE_GAMMA_STRENGTH_KEY,
+                satelliteGammaStrength,
+                MIN_SATELLITE_GAMMA_STRENGTH,
+                MAX_SATELLITE_GAMMA_STRENGTH
+        );
+        satelliteGammaDecayTicks = readClampedDouble(
+                defaults,
+                SATELLITE_GAMMA_DECAY_TICKS_KEY,
+                satelliteGammaDecayTicks,
+                MIN_SATELLITE_GAMMA_DECAY_TICKS,
+                MAX_SATELLITE_GAMMA_DECAY_TICKS
+        );
+        satelliteGammaOverlayLift = readClampedDouble(
+                defaults,
+                SATELLITE_GAMMA_OVERLAY_LIFT_KEY,
+                satelliteGammaOverlayLift,
+                MIN_SATELLITE_UNIT,
+                MAX_SATELLITE_UNIT
+        );
+        satelliteGammaBlowoutStrength = readClampedDouble(
+                defaults,
+                SATELLITE_GAMMA_BLOWOUT_STRENGTH_KEY,
+                satelliteGammaBlowoutStrength,
+                MIN_SATELLITE_UNIT,
+                MAX_SATELLITE_UNIT
+        );
+        satelliteColorGradeMax = readClampedDouble(
+                defaults,
+                SATELLITE_COLOR_GRADE_MAX_KEY,
+                satelliteColorGradeMax,
+                MIN_SATELLITE_UNIT,
+                MAX_SATELLITE_UNIT
+        );
+        satellitePlungeExposureMax = readClampedDouble(
+                defaults,
+                SATELLITE_PLUNGE_EXPOSURE_MAX_KEY,
+                satellitePlungeExposureMax,
+                MIN_SATELLITE_UNIT,
+                MAX_SATELLITE_UNIT
+        );
+        satelliteShaderExposureScale = readClampedDouble(
+                defaults,
+                SATELLITE_SHADER_EXPOSURE_SCALE_KEY,
+                satelliteShaderExposureScale,
+                MIN_SATELLITE_SHADER_SCALE,
+                MAX_SATELLITE_SHADER_SCALE
+        );
+        save();
     }
 
     public static void applyPreset(String preset) {
@@ -545,7 +765,12 @@ zoomStageGlideTicks=13
     }
 
     static boolean setCustomSoundsEnabled(boolean enabled) {
-        customSoundsEnabled = enabled;
+        if (!enabled) {
+            soundPack = SOUND_PACK_OFF;
+        } else if (SOUND_PACK_OFF.equals(soundPack)) {
+            soundPack = SOUND_PACK_GTA;
+        }
+        customSoundsEnabled = isTeleportSoundsEnabled();
         return save();
     }
 
@@ -1010,7 +1235,8 @@ zoomStageGlideTicks=13
         configLayoutBaseWidth = readPositiveInt(properties, CONFIG_LAYOUT_BASE_WIDTH_KEY, configLayoutBaseWidth);
         configLayoutBaseHeight = readPositiveInt(properties, CONFIG_LAYOUT_BASE_HEIGHT_KEY, configLayoutBaseHeight);
         transitionPreset = properties.getProperty(TRANSITION_PRESET_KEY, transitionPreset);
-        soundPack = properties.getProperty(SOUND_PACK_KEY, soundPack);
+        soundPack = sanitizeSoundPack(properties.getProperty(SOUND_PACK_KEY, soundPack));
+        applySoundPackState();
         enableShutterFlash = Boolean.parseBoolean(properties.getProperty(ENABLE_SHUTTER_FLASH_KEY, Boolean.toString(enableShutterFlash)));
         enableVignette = Boolean.parseBoolean(properties.getProperty(ENABLE_VIGNETTE_KEY, Boolean.toString(enableVignette)));
         enableInterferenceLines = Boolean.parseBoolean(properties.getProperty(ENABLE_INTERFERENCE_LINES_KEY, Boolean.toString(enableInterferenceLines)));
@@ -1019,6 +1245,59 @@ zoomStageGlideTicks=13
         enableWaystones = Boolean.parseBoolean(properties.getProperty(ENABLE_WAYSTONES_KEY, Boolean.toString(enableWaystones)));
         enableJourneyMap = Boolean.parseBoolean(properties.getProperty(ENABLE_JOURNEYMAP_KEY, Boolean.toString(enableJourneyMap)));
         enablePortals = Boolean.parseBoolean(properties.getProperty(ENABLE_PORTALS_KEY, Boolean.toString(enablePortals)));
+        enableSatelliteCameraFx = Boolean.parseBoolean(properties.getProperty(
+                ENABLE_SATELLITE_CAMERA_FX_KEY,
+                Boolean.toString(enableSatelliteCameraFx)
+        ));
+        satelliteGammaStrength = readClampedDouble(
+                properties,
+                SATELLITE_GAMMA_STRENGTH_KEY,
+                satelliteGammaStrength,
+                MIN_SATELLITE_GAMMA_STRENGTH,
+                MAX_SATELLITE_GAMMA_STRENGTH
+        );
+        satelliteGammaDecayTicks = readClampedDouble(
+                properties,
+                SATELLITE_GAMMA_DECAY_TICKS_KEY,
+                satelliteGammaDecayTicks,
+                MIN_SATELLITE_GAMMA_DECAY_TICKS,
+                MAX_SATELLITE_GAMMA_DECAY_TICKS
+        );
+        satelliteGammaOverlayLift = readClampedDouble(
+                properties,
+                SATELLITE_GAMMA_OVERLAY_LIFT_KEY,
+                satelliteGammaOverlayLift,
+                MIN_SATELLITE_UNIT,
+                MAX_SATELLITE_UNIT
+        );
+        satelliteGammaBlowoutStrength = readClampedDouble(
+                properties,
+                SATELLITE_GAMMA_BLOWOUT_STRENGTH_KEY,
+                satelliteGammaBlowoutStrength,
+                MIN_SATELLITE_UNIT,
+                MAX_SATELLITE_UNIT
+        );
+        satelliteColorGradeMax = readClampedDouble(
+                properties,
+                SATELLITE_COLOR_GRADE_MAX_KEY,
+                satelliteColorGradeMax,
+                MIN_SATELLITE_UNIT,
+                MAX_SATELLITE_UNIT
+        );
+        satellitePlungeExposureMax = readClampedDouble(
+                properties,
+                SATELLITE_PLUNGE_EXPOSURE_MAX_KEY,
+                satellitePlungeExposureMax,
+                MIN_SATELLITE_UNIT,
+                MAX_SATELLITE_UNIT
+        );
+        satelliteShaderExposureScale = readClampedDouble(
+                properties,
+                SATELLITE_SHADER_EXPOSURE_SCALE_KEY,
+                satelliteShaderExposureScale,
+                MIN_SATELLITE_SHADER_SCALE,
+                MAX_SATELLITE_SHADER_SCALE
+        );
         readWidgetLayouts(properties);
         readConfigTexts(properties);
     }
@@ -1099,6 +1378,44 @@ zoomStageGlideTicks=13
         } catch (NumberFormatException ignored) {
             return 0;
         }
+    }
+
+    private static void applyConfigVersionMigration(Properties properties, int previousVersion) {
+        if (previousVersion < 5) {
+            properties.setProperty(CUSTOM_SOUNDS_ENABLED_KEY, "true");
+            properties.setProperty(SOUND_PACK_KEY, "gta");
+            properties.setProperty(ENABLE_SATELLITE_CAMERA_FX_KEY, "false");
+            properties.setProperty(ENABLE_SHUTTER_FLASH_KEY, "false");
+            properties.setProperty(ENABLE_VIGNETTE_KEY, "false");
+        }
+        if (previousVersion < 6) {
+            properties.setProperty(ENABLE_INTERFERENCE_LINES_KEY, "false");
+        }
+        if (previousVersion < 7) {
+            if (!Boolean.parseBoolean(properties.getProperty(CUSTOM_SOUNDS_ENABLED_KEY, "true"))) {
+                properties.setProperty(SOUND_PACK_KEY, SOUND_PACK_OFF);
+                properties.setProperty(CUSTOM_SOUNDS_ENABLED_KEY, "false");
+            } else {
+                properties.setProperty(SOUND_PACK_KEY, sanitizeSoundPack(properties.getProperty(SOUND_PACK_KEY, SOUND_PACK_GTA)));
+                properties.setProperty(CUSTOM_SOUNDS_ENABLED_KEY, "true");
+            }
+        }
+        if (previousVersion < 8) {
+            syncSoundPackProperties(properties);
+        }
+    }
+
+    private static void syncSoundPackProperties(Properties properties) {
+        String pack = sanitizeSoundPack(properties.getProperty(SOUND_PACK_KEY, SOUND_PACK_GTA));
+        if (!Boolean.parseBoolean(properties.getProperty(CUSTOM_SOUNDS_ENABLED_KEY, "true"))) {
+            pack = SOUND_PACK_OFF;
+        }
+        properties.setProperty(SOUND_PACK_KEY, pack);
+        properties.setProperty(CUSTOM_SOUNDS_ENABLED_KEY, Boolean.toString(isTeleportSoundPackEnabled(pack)));
+    }
+
+    private static boolean isTeleportSoundPackEnabled(String pack) {
+        return !SOUND_PACK_OFF.equals(pack);
     }
 
     private static boolean needsLayoutCleanup(Properties properties) {
@@ -1246,6 +1563,14 @@ zoomStageGlideTicks=13
         properties.setProperty(ENABLE_WAYSTONES_KEY, Boolean.toString(enableWaystones));
         properties.setProperty(ENABLE_JOURNEYMAP_KEY, Boolean.toString(enableJourneyMap));
         properties.setProperty(ENABLE_PORTALS_KEY, Boolean.toString(enablePortals));
+        properties.setProperty(ENABLE_SATELLITE_CAMERA_FX_KEY, Boolean.toString(enableSatelliteCameraFx));
+        properties.setProperty(SATELLITE_GAMMA_STRENGTH_KEY, Double.toString(satelliteGammaStrength));
+        properties.setProperty(SATELLITE_GAMMA_DECAY_TICKS_KEY, Double.toString(satelliteGammaDecayTicks));
+        properties.setProperty(SATELLITE_GAMMA_OVERLAY_LIFT_KEY, Double.toString(satelliteGammaOverlayLift));
+        properties.setProperty(SATELLITE_GAMMA_BLOWOUT_STRENGTH_KEY, Double.toString(satelliteGammaBlowoutStrength));
+        properties.setProperty(SATELLITE_COLOR_GRADE_MAX_KEY, Double.toString(satelliteColorGradeMax));
+        properties.setProperty(SATELLITE_PLUNGE_EXPOSURE_MAX_KEY, Double.toString(satellitePlungeExposureMax));
+        properties.setProperty(SATELLITE_SHADER_EXPOSURE_SCALE_KEY, Double.toString(satelliteShaderExposureScale));
         properties.setProperty(CONFIG_LAYOUT_EDITOR_BUTTON_VISIBLE_KEY, Boolean.toString(configLayoutEditorButtonVisible));
         properties.setProperty(CONFIG_LAYOUT_DEBUG_ENABLED_KEY, Boolean.toString(configLayoutDebugEnabled));
         properties.setProperty(CONFIG_LAYOUT_ASPECT_LOCKED_KEY, Boolean.toString(configLayoutAspectLocked));
@@ -1281,7 +1606,8 @@ zoomStageGlideTicks=13
                 properties.store(output, "Grand Teleport client settings");
             }
             return true;
-        } catch (IOException ignored) {
+        } catch (IOException exception) {
+            GtaLikeTeleport.LOGGER.error("Failed to save Grand Teleport config to {}", configPath, exception);
             return false;
         }
     }

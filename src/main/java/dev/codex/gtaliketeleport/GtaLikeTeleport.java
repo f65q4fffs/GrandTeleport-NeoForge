@@ -60,8 +60,9 @@ public final class GtaLikeTeleport {
 
     private void commonSetup(final FMLCommonSetupEvent event) {
         LOGGER.info("Grand Teleport Common Setup");
-        // Configuration initialization (will be implemented in later steps)
-        GtaLikeTeleportConfig.load();
+        if (FMLEnvironment.dist == Dist.DEDICATED_SERVER) {
+            GtaLikeTeleportConfig.load();
+        }
     }
 
     private void clientSetup(final FMLClientSetupEvent event) {

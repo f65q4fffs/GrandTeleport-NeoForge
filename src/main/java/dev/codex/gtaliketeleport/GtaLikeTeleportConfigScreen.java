@@ -124,14 +124,7 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
     private static final String ITEM_FALLBACK_CHUNK_FADE_TOGGLE = "fallback_chunk_fade_toggle";
     private static final String ITEM_PRESET_LABEL = "preset_label";
     private static final String ITEM_PRESET_TOGGLE = "preset_toggle";
-    private static final String ITEM_FADE_COLOR_LABEL = "fade_color_label";
-    private static final String ITEM_FADE_COLOR_TOGGLE = "fade_color_toggle";
-    private static final String ITEM_SHUTTER_FLASH_LABEL = "shutter_flash_label";
-    private static final String ITEM_SHUTTER_FLASH_TOGGLE = "shutter_flash_toggle";
-    private static final String ITEM_VIGNETTE_LABEL = "vignette_label";
-    private static final String ITEM_VIGNETTE_TOGGLE = "vignette_toggle";
-    private static final String ITEM_INTERFERENCE_LABEL = "interference_label";
-    private static final String ITEM_INTERFERENCE_TOGGLE = "interference_toggle";
+
     private static final String ITEM_SOUND_PACK_LABEL = "sound_pack_label";
     private static final String ITEM_SOUND_PACK_TOGGLE = "sound_pack_toggle";
     private static final String ITEM_VANILLA_TP_LABEL = "vanilla_tp_label";
@@ -199,10 +192,7 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
     private Button externalTeleportToggleButton;
     private Button fallbackChunkFadeToggleButton;
     private Button presetToggleButton;
-    private Button fadeColorToggleButton;
-    private Button shutterFlashToggleButton;
-    private Button vignetteToggleButton;
-    private Button interferenceLinesToggleButton;
+
     private Button soundPackToggleButton;
     private Button vanillaTpToggleButton;
     private Button journeyMapToggleButton;
@@ -377,10 +367,7 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
         this.externalTeleportToggleButton = null;
         this.fallbackChunkFadeToggleButton = null;
         this.presetToggleButton = null;
-        this.fadeColorToggleButton = null;
-        this.shutterFlashToggleButton = null;
-        this.vignetteToggleButton = null;
-        this.interferenceLinesToggleButton = null;
+
         this.soundPackToggleButton = null;
         this.vanillaTpToggleButton = null;
         this.journeyMapToggleButton = null;
@@ -519,56 +506,6 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
         ));
         this.presetToggleButton.setTooltip(Tooltip.create(Component.translatable("gtalike_teleport.tooltip.preset")));
 
-        LayoutRect fadeColorRect = getItemRect(ITEM_FADE_COLOR_TOGGLE);
-        this.fadeColorToggleButton = addRenderableWidget(new IconButton(
-                fadeColorRect.x, fadeColorRect.y, fadeColorRect.width, fadeColorRect.height,
-                Component.empty(),
-                new ItemStack(Items.POTION),
-                null,
-                () -> {
-                    String color = GtaLikeTeleportConfig.getFadeColor();
-                    if ("white".equals(color)) return 0xFFE6E6E6;
-                    if ("nether".equals(color)) return 0xFF4D1414;
-                    if ("end".equals(color)) return 0xFF241433;
-                    return 0xFF0A0A0F; // black
-                },
-                button -> cycleFadeColor()
-        ));
-        this.fadeColorToggleButton.setTooltip(Tooltip.create(Component.translatable("gtalike_teleport.tooltip.fade_color")));
-
-        LayoutRect flashRect = getItemRect(ITEM_SHUTTER_FLASH_TOGGLE);
-        this.shutterFlashToggleButton = addRenderableWidget(new IconButton(
-                flashRect.x, flashRect.y, flashRect.width, flashRect.height,
-                Component.empty(),
-                new ItemStack(Items.SPYGLASS),
-                () -> GtaLikeTeleportConfig.isShutterFlashEnabled(),
-                null,
-                button -> toggleShutterFlash()
-        ));
-        this.shutterFlashToggleButton.setTooltip(Tooltip.create(Component.translatable("gtalike_teleport.tooltip.shutter_flash")));
-
-        LayoutRect vignetteRect = getItemRect(ITEM_VIGNETTE_TOGGLE);
-        this.vignetteToggleButton = addRenderableWidget(new IconButton(
-                vignetteRect.x, vignetteRect.y, vignetteRect.width, vignetteRect.height,
-                Component.empty(),
-                new ItemStack(Items.ENDER_EYE),
-                () -> GtaLikeTeleportConfig.isVignetteEnabled(),
-                null,
-                button -> toggleVignette()
-        ));
-        this.vignetteToggleButton.setTooltip(Tooltip.create(Component.translatable("gtalike_teleport.tooltip.vignette")));
-
-        LayoutRect linesRect = getItemRect(ITEM_INTERFERENCE_TOGGLE);
-        this.interferenceLinesToggleButton = addRenderableWidget(new IconButton(
-                linesRect.x, linesRect.y, linesRect.width, linesRect.height,
-                Component.empty(),
-                new ItemStack(Items.COMPASS),
-                () -> GtaLikeTeleportConfig.isInterferenceLinesEnabled(),
-                null,
-                button -> toggleInterferenceLines()
-        ));
-        this.interferenceLinesToggleButton.setTooltip(Tooltip.create(Component.translatable("gtalike_teleport.tooltip.interference")));
-
         updateGeneralButtons();
     }
 
@@ -650,7 +587,7 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
                 new ItemStack(Items.JUKEBOX),
                 null,
                 null,
-                button -> toggleCustomSoundsEnabled()
+                button -> cycleSoundPack()
         ));
         this.soundModeToggleButton.setTooltip(Tooltip.create(Component.translatable("gtalike_teleport.tooltip.sound_pack")));
 
@@ -664,23 +601,7 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
                 button -> {}
         ));
 
-        LayoutRect minecraftVolumeRect = getItemRect(ITEM_MINECRAFT_VOLUME_SLIDER);
-        this.minecraftSoundVolumeSlider = addRenderableWidget(new SingleValueSlider(
-                minecraftVolumeRect.x,
-                minecraftVolumeRect.y,
-                minecraftVolumeRect.width,
-                getItemComponent(ITEM_MINECRAFT_VOLUME_SLIDER),
-                this.minecraftSoundVolume,
-                GtaLikeTeleportConfig.getMinSoundVolume(),
-                GtaLikeTeleportConfig.getMaxSoundVolume(),
-                0.1D,
-                false,
-                "x",
-                value -> {
-                    this.minecraftSoundVolume = value;
-                    GtaLikeTeleportConfig.setMinecraftSoundVolume(value);
-                }
-        ));
+        this.minecraftSoundVolumeSlider = null;
 
         LayoutRect customVolumeRect = getItemRect(ITEM_CUSTOM_VOLUME_SLIDER);
         this.customSoundVolumeSlider = addRenderableWidget(new SingleValueSlider(
@@ -1162,27 +1083,35 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
         }
     }
 
-    private void toggleCustomSoundsEnabled() {
-        boolean customEnabled = GtaLikeTeleportConfig.isCustomSoundsEnabled();
+    private void cycleSoundPack() {
         String pack = GtaLikeTeleportConfig.getSoundPack();
-
-        if (customEnabled && "gta".equals(pack)) {
-            // GTA V -> Default (Mod)
-            this.customSoundsEnabled = true;
-            GtaLikeTeleportConfig.setCustomSoundsEnabled(true);
-            GtaLikeTeleportConfig.setSoundPack("default");
-        } else if (customEnabled && "default".equals(pack)) {
-            // Default (Mod) -> Minecraft (OFF)
-            this.customSoundsEnabled = false;
-            GtaLikeTeleportConfig.setCustomSoundsEnabled(false);
-            GtaLikeTeleportConfig.setSoundPack("default");
-        } else {
-            // Minecraft (OFF) -> GTA V
-            this.customSoundsEnabled = true;
-            GtaLikeTeleportConfig.setCustomSoundsEnabled(true);
-            GtaLikeTeleportConfig.setSoundPack("gta");
-        }
+        String next = switch (pack) {
+            case GtaLikeTeleportConfig.SOUND_PACK_GTA -> GtaLikeTeleportConfig.SOUND_PACK_DEFAULT;
+            case GtaLikeTeleportConfig.SOUND_PACK_DEFAULT -> GtaLikeTeleportConfig.SOUND_PACK_OFF;
+            default -> GtaLikeTeleportConfig.SOUND_PACK_GTA;
+        };
+        boolean saved = GtaLikeTeleportConfig.setSoundPack(next);
+        this.customSoundsEnabled = GtaLikeTeleportConfig.isCustomSoundsEnabled();
         updateSoundButtons();
+        if (this.minecraft != null && this.minecraft.player != null) {
+            this.minecraft.player.displayClientMessage(
+                    Component.translatable(
+                            saved
+                                    ? "gtalike_teleport.feedback.sound_pack_changed"
+                                    : "gtalike_teleport.feedback.sound_pack_save_failed",
+                            getSoundPackLabel(GtaLikeTeleportConfig.getSoundPack())
+                    ),
+                    false
+            );
+        }
+    }
+
+    private static Component getSoundPackLabel(String pack) {
+        return switch (pack) {
+            case GtaLikeTeleportConfig.SOUND_PACK_DEFAULT -> Component.translatable("gtalike_teleport.option.sound_mode.default");
+            case GtaLikeTeleportConfig.SOUND_PACK_OFF -> Component.translatable("gtalike_teleport.option.sound_mode.off");
+            default -> Component.translatable("gtalike_teleport.option.sound_mode.gta");
+        };
     }
 
     private void cyclePreset() {
@@ -1203,41 +1132,7 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
         updateGeneralButtons();
     }
 
-    private void cycleFadeColor() {
-        String c = GtaLikeTeleportConfig.getFadeColor();
-        String next = "black";
-        if ("black".equals(c)) {
-            next = "white";
-        } else if ("white".equals(c)) {
-            next = "nether";
-        } else if ("nether".equals(c)) {
-            next = "end";
-        }
-        GtaLikeTeleportConfig.setFadeColor(next);
-        updateGeneralButtons();
-    }
 
-    private void toggleShutterFlash() {
-        GtaLikeTeleportConfig.setShutterFlashEnabled(!GtaLikeTeleportConfig.isShutterFlashEnabled());
-        updateGeneralButtons();
-    }
-
-    private void toggleVignette() {
-        GtaLikeTeleportConfig.setVignetteEnabled(!GtaLikeTeleportConfig.isVignetteEnabled());
-        updateGeneralButtons();
-    }
-
-    private void toggleInterferenceLines() {
-        GtaLikeTeleportConfig.setInterferenceLinesEnabled(!GtaLikeTeleportConfig.isInterferenceLinesEnabled());
-        updateGeneralButtons();
-    }
-
-    private void toggleSoundPack() {
-        String pack = GtaLikeTeleportConfig.getSoundPack();
-        String next = "default".equals(pack) ? "gta" : "default";
-        GtaLikeTeleportConfig.setSoundPack(next);
-        updateSoundButtons();
-    }
 
     private void toggleVanillaTp() {
         GtaLikeTeleportConfig.setVanillaTpEnabled(!GtaLikeTeleportConfig.isVanillaTpEnabled());
@@ -1262,21 +1157,21 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
 
     private void updateSoundButtons() {
         if (this.soundModeToggleButton != null) {
-            boolean customEnabled = GtaLikeTeleportConfig.isCustomSoundsEnabled();
             String pack = GtaLikeTeleportConfig.getSoundPack();
-            String modeStr;
-            if (customEnabled && "gta".equals(pack)) {
-                modeStr = "GTA V (Real)";
-            } else if (customEnabled && "default".equals(pack)) {
-                modeStr = "Default (Mod)";
-            } else {
-                modeStr = "Minecraft (OFF)";
-            }
-            this.soundModeToggleButton.setMessage(Component.translatable("gtalike_teleport.option.sound_pack", modeStr));
+            Component modeLabel = switch (pack) {
+                case GtaLikeTeleportConfig.SOUND_PACK_DEFAULT -> Component.translatable("gtalike_teleport.option.sound_mode.default");
+                case GtaLikeTeleportConfig.SOUND_PACK_OFF -> Component.translatable("gtalike_teleport.option.sound_mode.off");
+                default -> Component.translatable("gtalike_teleport.option.sound_mode.gta");
+            };
+            this.soundModeToggleButton.setMessage(Component.translatable("gtalike_teleport.option.sound_pack", modeLabel));
         }
         if (this.soundPackToggleButton != null) {
             this.soundPackToggleButton.setMessage(Component.empty());
             this.soundPackToggleButton.active = false;
+        }
+        boolean soundsEnabled = GtaLikeTeleportConfig.isTeleportSoundsEnabled();
+        if (this.customSoundVolumeSlider != null) {
+            this.customSoundVolumeSlider.active = soundsEnabled;
         }
     }
 
@@ -1295,29 +1190,14 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
             String cap = p.substring(0, 1).toUpperCase() + p.substring(1);
             this.presetToggleButton.setMessage(Component.translatable("gtalike_teleport.option.preset", cap));
         }
-        if (this.fadeColorToggleButton != null) {
-            String c = GtaLikeTeleportConfig.getFadeColor();
-            String cap = c.substring(0, 1).toUpperCase() + c.substring(1);
-            this.fadeColorToggleButton.setMessage(Component.translatable("gtalike_teleport.option.fade_color", cap));
-        }
-        if (this.shutterFlashToggleButton != null) {
-            this.shutterFlashToggleButton.setMessage(Component.translatable("gtalike_teleport.option.shutter_flash"));
-        }
-        if (this.vignetteToggleButton != null) {
-            this.vignetteToggleButton.setMessage(Component.translatable("gtalike_teleport.option.vignette"));
-        }
-        if (this.interferenceLinesToggleButton != null) {
-            this.interferenceLinesToggleButton.setMessage(Component.translatable("gtalike_teleport.option.interference"));
-        }
+
     }
 
     private void resetSoundSettings() {
-        this.customSoundsEnabled = false;
-        this.minecraftSoundVolume = GtaLikeTeleportConfig.getDefaultMinecraftSoundVolume();
         this.customSoundVolume = GtaLikeTeleportConfig.getDefaultCustomSoundVolume();
-        GtaLikeTeleportConfig.setCustomSoundsEnabled(this.customSoundsEnabled);
-        GtaLikeTeleportConfig.setMinecraftSoundVolume(this.minecraftSoundVolume);
+        GtaLikeTeleportConfig.setSoundPack(GtaLikeTeleportConfig.SOUND_PACK_GTA);
         GtaLikeTeleportConfig.setCustomSoundVolume(this.customSoundVolume);
+        this.customSoundsEnabled = GtaLikeTeleportConfig.isCustomSoundsEnabled();
         rebuildWidgets();
     }
 
@@ -1655,22 +1535,7 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
             LayoutRect rect = getItemRect(ITEM_PRESET_TOGGLE);
             setWidgetRectangle(this.presetToggleButton, rect.width, rect.height, rect.x, rect.y);
         }
-        if (this.fadeColorToggleButton != null) {
-            LayoutRect rect = getItemRect(ITEM_FADE_COLOR_TOGGLE);
-            setWidgetRectangle(this.fadeColorToggleButton, rect.width, rect.height, rect.x, rect.y);
-        }
-        if (this.shutterFlashToggleButton != null) {
-            LayoutRect rect = getItemRect(ITEM_SHUTTER_FLASH_TOGGLE);
-            setWidgetRectangle(this.shutterFlashToggleButton, rect.width, rect.height, rect.x, rect.y);
-        }
-        if (this.vignetteToggleButton != null) {
-            LayoutRect rect = getItemRect(ITEM_VIGNETTE_TOGGLE);
-            setWidgetRectangle(this.vignetteToggleButton, rect.width, rect.height, rect.x, rect.y);
-        }
-        if (this.interferenceLinesToggleButton != null) {
-            LayoutRect rect = getItemRect(ITEM_INTERFERENCE_TOGGLE);
-            setWidgetRectangle(this.interferenceLinesToggleButton, rect.width, rect.height, rect.x, rect.y);
-        }
+
         if (this.soundModeToggleButton != null) {
             LayoutRect rect = getItemRect(ITEM_SOUND_MODE_TOGGLE);
             setWidgetRectangle(this.soundModeToggleButton, rect.width, rect.height, rect.x, rect.y);
@@ -2459,10 +2324,6 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
                 || ITEM_MOVEMENT_LABEL.equals(item)
                 || ITEM_CROSS_DIMENSION_TRAVEL_LABEL.equals(item)
                 || ITEM_PRESET_LABEL.equals(item)
-                || ITEM_FADE_COLOR_LABEL.equals(item)
-                || ITEM_SHUTTER_FLASH_LABEL.equals(item)
-                || ITEM_VIGNETTE_LABEL.equals(item)
-                || ITEM_INTERFERENCE_LABEL.equals(item)
                 || ITEM_SOUND_PACK_LABEL.equals(item)
                 || ITEM_VANILLA_TP_LABEL.equals(item)
                 || ITEM_JOURNEYMAP_LABEL.equals(item)
@@ -2598,23 +2459,19 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
             return "Teleport sound source";
         }
         if (ITEM_SOUND_MODE_TOGGLE.equals(item)) {
-            boolean customEnabled = GtaLikeTeleportConfig.isCustomSoundsEnabled();
             String pack = GtaLikeTeleportConfig.getSoundPack();
-            String modeStr;
-            if (customEnabled && "gta".equals(pack)) {
-                modeStr = "GTA V (Real)";
-            } else if (customEnabled && "default".equals(pack)) {
-                modeStr = "Default (Mod)";
-            } else {
-                modeStr = "Minecraft (OFF)";
-            }
-            return "Sound Pack: " + modeStr;
+            String modeStr = switch (pack) {
+                case GtaLikeTeleportConfig.SOUND_PACK_DEFAULT -> Component.translatable("gtalike_teleport.option.sound_mode.default").getString();
+                case GtaLikeTeleportConfig.SOUND_PACK_OFF -> Component.translatable("gtalike_teleport.option.sound_mode.off").getString();
+                default -> Component.translatable("gtalike_teleport.option.sound_mode.gta").getString();
+            };
+            return Component.translatable("gtalike_teleport.option.sound_pack", modeStr).getString();
         }
         if (ITEM_MINECRAFT_VOLUME_SLIDER.equals(item)) {
-            return "Minecraft sound volume";
+            return "";
         }
         if (ITEM_CUSTOM_VOLUME_SLIDER.equals(item)) {
-            return "Custom sound volume";
+            return Component.translatable("gtalike_teleport.option.sound_volume_mod_gta").getString();
         }
         if (ITEM_OTHERS_TITLE.equals(item)) {
             return "Grand Teleport Other Settings";
@@ -2667,31 +2524,6 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
         if (ITEM_PRESET_TOGGLE.equals(item)) {
             String p = GtaLikeTeleportConfig.getTransitionPreset();
             return "Preset: " + (p == null || p.isEmpty() ? "Classic" : p.substring(0, 1).toUpperCase() + p.substring(1));
-        }
-        if (ITEM_FADE_COLOR_LABEL.equals(item)) {
-            return "Screen Fade Color";
-        }
-        if (ITEM_FADE_COLOR_TOGGLE.equals(item)) {
-            String c = GtaLikeTeleportConfig.getFadeColor();
-            return "Fade Color: " + (c == null || c.isEmpty() ? "Black" : c.substring(0, 1).toUpperCase() + c.substring(1));
-        }
-        if (ITEM_SHUTTER_FLASH_LABEL.equals(item)) {
-            return "Camera Shutter Flash";
-        }
-        if (ITEM_SHUTTER_FLASH_TOGGLE.equals(item)) {
-            return "Shutter Flash: " + (GtaLikeTeleportConfig.isShutterFlashEnabled() ? "ON" : "OFF");
-        }
-        if (ITEM_VIGNETTE_LABEL.equals(item)) {
-            return "Dynamic Vignette Effect";
-        }
-        if (ITEM_VIGNETTE_TOGGLE.equals(item)) {
-            return "Vignette Effect: " + (GtaLikeTeleportConfig.isVignetteEnabled() ? "ON" : "OFF");
-        }
-        if (ITEM_INTERFERENCE_LABEL.equals(item)) {
-            return "Grid Scanline Glitch";
-        }
-        if (ITEM_INTERFERENCE_TOGGLE.equals(item)) {
-            return "Scanline Glitch: " + (GtaLikeTeleportConfig.isInterferenceLinesEnabled() ? "ON" : "OFF");
         }
         if (ITEM_SOUND_PACK_LABEL.equals(item)) {
             return "Sound Pack";
@@ -2792,10 +2624,6 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
             items.add(ITEM_MOVEMENT_TOGGLE);
             items.add(ITEM_CROSS_DIMENSION_TRAVEL_TOGGLE);
             items.add(ITEM_PRESET_TOGGLE);
-            items.add(ITEM_FADE_COLOR_TOGGLE);
-            items.add(ITEM_SHUTTER_FLASH_TOGGLE);
-            items.add(ITEM_VIGNETTE_TOGGLE);
-            items.add(ITEM_INTERFERENCE_TOGGLE);
         } else if (this.currentPage == ConfigPage.ZOOM_STAGE_2) {
             items.add(ITEM_ADVANCED2_TITLE);
             items.add(ITEM_ADVANCED2_DESCRIPTION);
@@ -2811,7 +2639,6 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
             items.add(ITEM_PREV_PAGE_BUTTON);
             items.add(ITEM_NEXT_PAGE_BUTTON);
             items.add(ITEM_SOUND_MODE_TOGGLE);
-            items.add(ITEM_MINECRAFT_VOLUME_SLIDER);
             items.add(ITEM_CUSTOM_VOLUME_SLIDER);
         } else if (this.currentPage == ConfigPage.OTHERS) {
             items.add(ITEM_OTHERS_TITLE);
@@ -2960,6 +2787,15 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
         return new LayoutRect(x, y, columnWidth, 20);
     }
 
+    private LayoutRect getSoundVolumeSliderRect(LayoutRect panel, int index) {
+        int sideMargin = 15;
+        int modeToggleY = panel.y + 52;
+        int modeToggleHeight = 20;
+        int sliderGap = 8;
+        int y = modeToggleY + modeToggleHeight + sliderGap + index * (SingleValueSlider.HEIGHT + sliderGap);
+        return new LayoutRect(panel.x + sideMargin, y, panel.width - sideMargin * 2, SingleValueSlider.HEIGHT);
+    }
+
     private LayoutRect getDefaultItemRect(String item, LayoutRect panel) {
         int sliderWidth = Math.max(160, panel.width - 48);
         int sliderY = getFirstSliderY(panel);
@@ -3004,47 +2840,23 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
         if (ITEM_EFFECT_TOGGLE.equals(item)) {
             return getTwoColumnToggleRect(panel, 0, false);
         }
-        if (ITEM_SHUTTER_FLASH_LABEL.equals(item)) {
-            return new LayoutRect(panel.x, panel.y, 0, 0);
-        }
-        if (ITEM_SHUTTER_FLASH_TOGGLE.equals(item)) {
-            return getTwoColumnToggleRect(panel, 0, true);
-        }
         if (ITEM_MOVEMENT_LABEL.equals(item)) {
             return new LayoutRect(panel.x, panel.y, 0, 0);
         }
         if (ITEM_MOVEMENT_TOGGLE.equals(item)) {
-            return getTwoColumnToggleRect(panel, 1, false);
-        }
-        if (ITEM_VIGNETTE_LABEL.equals(item)) {
-            return new LayoutRect(panel.x, panel.y, 0, 0);
-        }
-        if (ITEM_VIGNETTE_TOGGLE.equals(item)) {
-            return getTwoColumnToggleRect(panel, 1, true);
+            return getTwoColumnToggleRect(panel, 0, true);
         }
         if (ITEM_CROSS_DIMENSION_TRAVEL_LABEL.equals(item)) {
             return new LayoutRect(panel.x, panel.y, 0, 0);
         }
         if (ITEM_CROSS_DIMENSION_TRAVEL_TOGGLE.equals(item)) {
-            return getTwoColumnToggleRect(panel, 2, false);
-        }
-        if (ITEM_INTERFERENCE_LABEL.equals(item)) {
-            return new LayoutRect(panel.x, panel.y, 0, 0);
-        }
-        if (ITEM_INTERFERENCE_TOGGLE.equals(item)) {
-            return getTwoColumnToggleRect(panel, 2, true);
+            return getTwoColumnToggleRect(panel, 1, false);
         }
         if (ITEM_PRESET_LABEL.equals(item)) {
             return new LayoutRect(panel.x, panel.y, 0, 0);
         }
         if (ITEM_PRESET_TOGGLE.equals(item)) {
-            return getTwoColumnToggleRect(panel, 3, false);
-        }
-        if (ITEM_FADE_COLOR_LABEL.equals(item)) {
-            return new LayoutRect(panel.x, panel.y, 0, 0);
-        }
-        if (ITEM_FADE_COLOR_TOGGLE.equals(item)) {
-            return getTwoColumnToggleRect(panel, 3, true);
+            return getTwoColumnToggleRect(panel, 1, true);
         }
         if (ITEM_SOUND_PACK_LABEL.equals(item)) {
             return new LayoutRect(panel.x, panel.y, 0, 0);
@@ -3095,10 +2907,10 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
             return getTwoColumnToggleRect(panel, 0, true);
         }
         if (ITEM_MINECRAFT_VOLUME_SLIDER.equals(item)) {
-            return new LayoutRect(panel.x + 15, panel.y + 82, panel.width - 30, SingleValueSlider.HEIGHT);
+            return new LayoutRect(panel.x, panel.y, 0, 0);
         }
         if (ITEM_CUSTOM_VOLUME_SLIDER.equals(item)) {
-            return new LayoutRect(panel.x + 15, panel.y + 112, panel.width - 30, SingleValueSlider.HEIGHT);
+            return getSoundVolumeSliderRect(panel, 0);
         }
         if (ITEM_ZOOM_STAGE_GLIDE_SLIDER.equals(item)) {
             return new LayoutRect(panel.x, sliderY, sliderWidth, SingleValueSlider.HEIGHT);
@@ -3301,10 +3113,6 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
                 || ITEM_MOVEMENT_TOGGLE.equals(item)
                 || ITEM_CROSS_DIMENSION_TRAVEL_TOGGLE.equals(item)
                 || ITEM_PRESET_TOGGLE.equals(item)
-                || ITEM_FADE_COLOR_TOGGLE.equals(item)
-                || ITEM_SHUTTER_FLASH_TOGGLE.equals(item)
-                || ITEM_VIGNETTE_TOGGLE.equals(item)
-                || ITEM_INTERFERENCE_TOGGLE.equals(item)
                 || ITEM_SOUND_MODE_TOGGLE.equals(item)
                 || ITEM_SOUND_PACK_TOGGLE.equals(item)
                 || ITEM_WARP_PLATE_TOGGLE.equals(item)

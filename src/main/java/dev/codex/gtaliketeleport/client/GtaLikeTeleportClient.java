@@ -110,6 +110,11 @@ public final class GtaLikeTeleportClient {
                             .then(Commands.literal("off").executes(context -> setPlayerFreezeEnabled(context.getSource(), false)))
                             .then(Commands.literal("status").executes(context -> sendPlayerFreezeStatusFeedback(context.getSource()))))
                     .then(Commands.literal("config").executes(context -> openConfigScreen(context.getSource())))
+                    .then(Commands.literal("sound")
+                            .executes(context -> sendSoundPackFeedback(context.getSource()))
+                            .then(Commands.literal("gta").executes(context -> setSoundPack(context.getSource(), GtaLikeTeleportConfig.SOUND_PACK_GTA)))
+                            .then(Commands.literal("default").executes(context -> setSoundPack(context.getSource(), GtaLikeTeleportConfig.SOUND_PACK_DEFAULT)))
+                            .then(Commands.literal("off").executes(context -> setSoundPack(context.getSource(), GtaLikeTeleportConfig.SOUND_PACK_OFF))))
                     .then(Commands.argument("value", StringArgumentType.word()).executes(context -> handleCommandArgument(
                             context.getSource(),
                             StringArgumentType.getString(context, "value")
@@ -503,6 +508,33 @@ public final class GtaLikeTeleportClient {
         client.setScreen(new GtaLikeTeleportConfigScreen(client.screen));
         source.sendSuccess(() -> Component.literal("Grand Teleport settings opened."), false);
         return 1;
+    }
+
+    private static int sendSoundPackFeedback(CommandSourceStack source) {
+        source.sendSuccess(() -> Component.translatable(
+                "gtalike_teleport.feedback.sound_pack_status",
+                getSoundPackLabel(GtaLikeTeleportConfig.getSoundPack())
+        ), false);
+        return 1;
+    }
+
+    private static int setSoundPack(CommandSourceStack source, String pack) {
+        boolean saved = GtaLikeTeleportConfig.setSoundPack(pack);
+        Component label = getSoundPackLabel(GtaLikeTeleportConfig.getSoundPack());
+        if (saved) {
+            source.sendSuccess(() -> Component.translatable("gtalike_teleport.feedback.sound_pack_changed", label), false);
+        } else {
+            source.sendFailure(Component.translatable("gtalike_teleport.feedback.sound_pack_save_failed", label));
+        }
+        return saved ? 1 : 0;
+    }
+
+    private static Component getSoundPackLabel(String pack) {
+        return switch (pack) {
+            case GtaLikeTeleportConfig.SOUND_PACK_DEFAULT -> Component.translatable("gtalike_teleport.option.sound_mode.default");
+            case GtaLikeTeleportConfig.SOUND_PACK_OFF -> Component.translatable("gtalike_teleport.option.sound_mode.off");
+            default -> Component.translatable("gtalike_teleport.option.sound_mode.gta");
+        };
     }
 
     private static boolean canExecuteServerCommand(Minecraft client, String command) {
