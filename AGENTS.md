@@ -92,9 +92,15 @@ c:/Users/user/Desktop/dev/mod Grand Teleport Neoforge portage/
   - **Effet Shading de Caméra & Exposition GLSL** : Intégration d'un post-processing shader GLSL (`satellite_camera`) gérant en temps réel la colorisation militaire vert-kaki et une adaptation dynamique de l'exposition (bloom lumineux sur les zones claires) augmentant avec l'altitude de la caméra et culminant lors du plongeon final.
   - **Synchronisation Audio GTA V** : Importation et configuration de 4 fichiers audio GTA V (`gta5_dezoom`, `gta5_wind`, `gta5_zoom`, `gta5_landing`) parfaitement calés sur les phases de zoom-out, de voyage, de zoom-in et d'impact final.
   - Compilation et packaging final validés avec succès.
+- **Correctifs config & sons GTA V (session 03/07/2026)**
+  - **Sons GTA V** : copie des 4 `.ogg` depuis `audio/` vers `sounds/teleport/` (`gta5_dezoom`, `gta5_wind`, `gta5_zoom`, `gta5_landing`) — validé en jeu.
+  - **Bouton Config menu Mods** : enregistrement `IConfigScreenFactory` via `ModContainer.registerExtensionPoint()` (NeoForge 21.1.234) + commande `/gtp config`.
+  - **Interface config** : fix labels effacés par `repositionWidgets()`, override `protected rebuildWidgets()`, layout par défaut propre (`configLayoutCustom=false`), migration `configVersion=3` pour purger les anciens layouts dev sauvegardés.
+  - **IconButton** : suppression du double rendu texte (superposition illisible), colonnes toggle recalculées dynamiquement — validé en jeu.
+  - Compilation `gradlew build` validée, JAR `GrandTeleport-NeoForge-1.21.1-1.0.0-beta.jar` produit.
 
 ### 🔄 À faire
-- Aucun élément restant. Le portage Fabric → NeoForge 1.21.1 ainsi que l'ensemble des personnalisations demandées sont **entièrement terminés, corrigés et validés par compilation** !
+- **i18n complète écran config** (Phase 3) : plan `.kilo/plans/20260703053000-i18n-config-screen.md` — titres/onglets encore en anglais dur dans `getDefaultItemText()`, à valider explicitement avant implémentation.
 
 ---
 

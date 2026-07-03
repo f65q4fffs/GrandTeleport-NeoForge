@@ -109,6 +109,7 @@ public final class GtaLikeTeleportClient {
                             .then(Commands.literal("on").executes(context -> setPlayerFreezeEnabled(context.getSource(), true)))
                             .then(Commands.literal("off").executes(context -> setPlayerFreezeEnabled(context.getSource(), false)))
                             .then(Commands.literal("status").executes(context -> sendPlayerFreezeStatusFeedback(context.getSource()))))
+                    .then(Commands.literal("config").executes(context -> openConfigScreen(context.getSource())))
                     .then(Commands.argument("value", StringArgumentType.word()).executes(context -> handleCommandArgument(
                             context.getSource(),
                             StringArgumentType.getString(context, "value")
@@ -497,6 +498,13 @@ public final class GtaLikeTeleportClient {
         return 1;
     }
 
+    private static int openConfigScreen(CommandSourceStack source) {
+        Minecraft client = Minecraft.getInstance();
+        client.setScreen(new GtaLikeTeleportConfigScreen(client.screen));
+        source.sendSuccess(() -> Component.literal("Grand Teleport settings opened."), false);
+        return 1;
+    }
+
     private static boolean canExecuteServerCommand(Minecraft client, String command) {
         ClientPacketListener networkHandler = client.getConnection();
         if (networkHandler == null) {
@@ -604,6 +612,12 @@ public final class GtaLikeTeleportClient {
         if (lowerArgument.equals("player_freeze off")) {
             boolean saved = GtaLikeTeleportConfig.setPlayerFreezeEnabled(false);
             sendFeedback(client, createPlayerFreezeStateFeedback(false, saved, saved ? ChatFormatting.GREEN : ChatFormatting.YELLOW));
+            return true;
+        }
+
+        if (lowerArgument.equals("config") || lowerArgument.equals("settings")) {
+            client.setScreen(new GtaLikeTeleportConfigScreen(client.screen));
+            sendFeedback(client, Component.literal("Grand Teleport settings opened.").withStyle(ChatFormatting.GRAY));
             return true;
         }
 

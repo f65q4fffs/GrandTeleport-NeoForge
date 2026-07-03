@@ -24,30 +24,32 @@ public final class IconButton extends Button {
 
     @Override
     protected void renderWidget(GuiGraphics context, int mouseX, int mouseY, float tickProgress) {
-        // Rendu standard du bouton (fond et bordures)
+        Component label = getMessage();
+        setMessage(Component.empty());
         super.renderWidget(context, mouseX, mouseY, tickProgress);
+        setMessage(label);
 
         int x = getX();
         int y = getY();
         int w = getWidth();
         int h = getHeight();
+        int boxSize = 12;
+        int boxX = x + w - boxSize - 6;
+        int boxY = y + (h - boxSize) / 2;
 
-        // Rendu de l'icône d'item Minecraft sur la gauche
         if (this.icon != null && !this.icon.isEmpty()) {
             context.renderItem(this.icon, x + 4, y + (h - 16) / 2);
         }
 
-        // Rendu du texte décalé pour ne pas superposer l'icône
-        Component label = getMessage();
         int textX = x + 24;
         int textY = y + (h - 9) / 2;
         int textColor = isHoveredOrFocused() ? 0xFFFFFFFF : 0xFFE0E0E0;
-        context.drawString(Minecraft.getInstance().font, label, textX, textY, textColor, false);
-
-        // Dessin de l'indicateur d'état ON/OFF ou de couleur personnalisée sur la droite
-        int boxSize = 12;
-        int boxX = x + w - boxSize - 6;
-        int boxY = y + (h - boxSize) / 2;
+        int maxTextWidth = Math.max(0, boxX - textX - 4);
+        var font = Minecraft.getInstance().font;
+        String rendered = maxTextWidth > 0
+                ? font.plainSubstrByWidth(label.getString(), maxTextWidth)
+                : label.getString();
+        context.drawString(font, rendered, textX, textY, textColor, false);
 
         if (this.customColorBoxSupplier != null && this.customColorBoxSupplier.get() != null) {
             int color = this.customColorBoxSupplier.get();

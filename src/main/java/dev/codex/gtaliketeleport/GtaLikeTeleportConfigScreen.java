@@ -18,8 +18,10 @@ import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -229,7 +231,7 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
     private int sessionLayoutBaseHeight;
 
     public GtaLikeTeleportConfigScreen(Screen parent) {
-        super(Component.literal("Grand Teleport Settings"));
+        super(Component.translatable("gtalike_teleport.config.title"));
         this.parent = parent;
         this.selectedZoomDimension = getInitialZoomDimension();
         this.linked = GtaLikeTeleportConfig.areZoomHeightsLinked(this.selectedZoomDimension);
@@ -394,6 +396,13 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
         this.textEditBox = null;
         this.layoutValueEditBox = null;
         this.applyLayoutValueButton = null;
+    }
+
+    @Override
+    protected void rebuildWidgets() {
+        this.clearWidgets();
+        resetWidgetReferences();
+        this.init();
     }
 
     private void initZoomWidgets() {
@@ -1633,33 +1642,63 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
         if (this.effectToggleButton != null) {
             LayoutRect rect = getItemRect(ITEM_EFFECT_TOGGLE);
             setWidgetRectangle(this.effectToggleButton, rect.width, rect.height, rect.x, rect.y);
-            this.effectToggleButton.setMessage(Component.empty());
         }
         if (this.movementToggleButton != null) {
             LayoutRect rect = getItemRect(ITEM_MOVEMENT_TOGGLE);
             setWidgetRectangle(this.movementToggleButton, rect.width, rect.height, rect.x, rect.y);
-            this.movementToggleButton.setMessage(Component.empty());
         }
         if (this.crossDimensionTravelToggleButton != null) {
             LayoutRect rect = getItemRect(ITEM_CROSS_DIMENSION_TRAVEL_TOGGLE);
             setWidgetRectangle(this.crossDimensionTravelToggleButton, rect.width, rect.height, rect.x, rect.y);
-            this.crossDimensionTravelToggleButton.setMessage(Component.empty());
+        }
+        if (this.presetToggleButton != null) {
+            LayoutRect rect = getItemRect(ITEM_PRESET_TOGGLE);
+            setWidgetRectangle(this.presetToggleButton, rect.width, rect.height, rect.x, rect.y);
+        }
+        if (this.fadeColorToggleButton != null) {
+            LayoutRect rect = getItemRect(ITEM_FADE_COLOR_TOGGLE);
+            setWidgetRectangle(this.fadeColorToggleButton, rect.width, rect.height, rect.x, rect.y);
+        }
+        if (this.shutterFlashToggleButton != null) {
+            LayoutRect rect = getItemRect(ITEM_SHUTTER_FLASH_TOGGLE);
+            setWidgetRectangle(this.shutterFlashToggleButton, rect.width, rect.height, rect.x, rect.y);
+        }
+        if (this.vignetteToggleButton != null) {
+            LayoutRect rect = getItemRect(ITEM_VIGNETTE_TOGGLE);
+            setWidgetRectangle(this.vignetteToggleButton, rect.width, rect.height, rect.x, rect.y);
+        }
+        if (this.interferenceLinesToggleButton != null) {
+            LayoutRect rect = getItemRect(ITEM_INTERFERENCE_TOGGLE);
+            setWidgetRectangle(this.interferenceLinesToggleButton, rect.width, rect.height, rect.x, rect.y);
         }
         if (this.soundModeToggleButton != null) {
             LayoutRect rect = getItemRect(ITEM_SOUND_MODE_TOGGLE);
             setWidgetRectangle(this.soundModeToggleButton, rect.width, rect.height, rect.x, rect.y);
-            this.soundModeToggleButton.setMessage(Component.empty());
         }
         if (this.warpPlateToggleButton != null) {
             LayoutRect rect = getItemRect(ITEM_WARP_PLATE_TOGGLE);
             setWidgetRectangle(this.warpPlateToggleButton, rect.width, rect.height, rect.x, rect.y);
-            this.warpPlateToggleButton.setMessage(Component.empty());
         }
         if (this.externalTeleportToggleButton != null) {
             LayoutRect rect = getItemRect(ITEM_EXTERNAL_TELEPORT_TOGGLE);
             setWidgetRectangle(this.externalTeleportToggleButton, rect.width, rect.height, rect.x, rect.y);
             this.externalTeleportToggleButton.active = isExternalTeleportToggleAvailable();
-            this.externalTeleportToggleButton.setMessage(Component.empty());
+        }
+        if (this.vanillaTpToggleButton != null) {
+            LayoutRect rect = getItemRect(ITEM_VANILLA_TP_TOGGLE);
+            setWidgetRectangle(this.vanillaTpToggleButton, rect.width, rect.height, rect.x, rect.y);
+        }
+        if (this.journeyMapToggleButton != null) {
+            LayoutRect rect = getItemRect(ITEM_JOURNEYMAP_TOGGLE);
+            setWidgetRectangle(this.journeyMapToggleButton, rect.width, rect.height, rect.x, rect.y);
+        }
+        if (this.portalsToggleButton != null) {
+            LayoutRect rect = getItemRect(ITEM_PORTALS_TOGGLE);
+            setWidgetRectangle(this.portalsToggleButton, rect.width, rect.height, rect.x, rect.y);
+        }
+        if (this.fallbackChunkFadeToggleButton != null) {
+            LayoutRect rect = getItemRect(ITEM_FALLBACK_CHUNK_FADE_TOGGLE);
+            setWidgetRectangle(this.fallbackChunkFadeToggleButton, rect.width, rect.height, rect.x, rect.y);
         }
         if (this.minecraftSoundVolumeSlider != null) {
             LayoutRect rect = getItemRect(ITEM_MINECRAFT_VOLUME_SLIDER);
@@ -1774,6 +1813,13 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
         if (this.doneButton != null) {
             LayoutRect rect = getItemRect(ITEM_DONE_BUTTON);
             setWidgetRectangle(this.doneButton, rect.width, rect.height, rect.x, rect.y);
+        }
+        if (this.currentPage == ConfigPage.GENERAL) {
+            updateGeneralButtons();
+        } else if (this.currentPage == ConfigPage.SOUNDS) {
+            updateSoundButtons();
+        } else if (this.currentPage == ConfigPage.OTHERS) {
+            updateOthersButtons();
         }
         repositionTextEditor();
     }
@@ -2328,18 +2374,6 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
             this.bodyHeightSlider.setMessage(component);
         } else if (ITEM_BODY_GLIDE_SLIDER.equals(item) && this.bodyGlideSlider != null) {
             this.bodyGlideSlider.setMessage(component);
-        } else if (ITEM_EFFECT_TOGGLE.equals(item) && this.effectToggleButton != null) {
-            this.effectToggleButton.setMessage(Component.empty());
-        } else if (ITEM_MOVEMENT_TOGGLE.equals(item) && this.movementToggleButton != null) {
-            this.movementToggleButton.setMessage(Component.empty());
-        } else if (ITEM_CROSS_DIMENSION_TRAVEL_TOGGLE.equals(item) && this.crossDimensionTravelToggleButton != null) {
-            this.crossDimensionTravelToggleButton.setMessage(Component.empty());
-        } else if (ITEM_SOUND_MODE_TOGGLE.equals(item) && this.soundModeToggleButton != null) {
-            this.soundModeToggleButton.setMessage(Component.empty());
-        } else if (ITEM_WARP_PLATE_TOGGLE.equals(item) && this.warpPlateToggleButton != null) {
-            this.warpPlateToggleButton.setMessage(Component.empty());
-        } else if (ITEM_EXTERNAL_TELEPORT_TOGGLE.equals(item) && this.externalTeleportToggleButton != null) {
-            this.externalTeleportToggleButton.setMessage(Component.empty());
         } else if (ITEM_MINECRAFT_VOLUME_SLIDER.equals(item) && this.minecraftSoundVolumeSlider != null) {
             this.minecraftSoundVolumeSlider.setMessage(component);
         } else if (ITEM_CUSTOM_VOLUME_SLIDER.equals(item) && this.customSoundVolumeSlider != null) {
@@ -2914,6 +2948,18 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
                 || ITEM_DIMENSION_END.equals(item);
     }
 
+    private LayoutRect getTwoColumnToggleRect(LayoutRect panel, int rowIndex, boolean rightColumn) {
+        int sideMargin = 15;
+        int columnGap = 12;
+        int rowHeight = 28;
+        int columnWidth = Math.max(120, (panel.width - sideMargin * 2 - columnGap) / 2);
+        int x = rightColumn
+                ? panel.x + sideMargin + columnWidth + columnGap
+                : panel.x + sideMargin;
+        int y = panel.y + 52 + rowIndex * rowHeight;
+        return new LayoutRect(x, y, columnWidth, 20);
+    }
+
     private LayoutRect getDefaultItemRect(String item, LayoutRect panel) {
         int sliderWidth = Math.max(160, panel.width - 48);
         int sliderY = getFirstSliderY(panel);
@@ -2956,49 +3002,49 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
             return new LayoutRect(panel.x, panel.y, 0, 0);
         }
         if (ITEM_EFFECT_TOGGLE.equals(item)) {
-            return new LayoutRect(panel.x + 15, panel.y + 52, 140, 20);
+            return getTwoColumnToggleRect(panel, 0, false);
         }
         if (ITEM_SHUTTER_FLASH_LABEL.equals(item)) {
             return new LayoutRect(panel.x, panel.y, 0, 0);
         }
         if (ITEM_SHUTTER_FLASH_TOGGLE.equals(item)) {
-            return new LayoutRect(panel.x + panel.width - 155, panel.y + 52, 140, 20);
+            return getTwoColumnToggleRect(panel, 0, true);
         }
         if (ITEM_MOVEMENT_LABEL.equals(item)) {
             return new LayoutRect(panel.x, panel.y, 0, 0);
         }
         if (ITEM_MOVEMENT_TOGGLE.equals(item)) {
-            return new LayoutRect(panel.x + 15, panel.y + 80, 140, 20);
+            return getTwoColumnToggleRect(panel, 1, false);
         }
         if (ITEM_VIGNETTE_LABEL.equals(item)) {
             return new LayoutRect(panel.x, panel.y, 0, 0);
         }
         if (ITEM_VIGNETTE_TOGGLE.equals(item)) {
-            return new LayoutRect(panel.x + panel.width - 155, panel.y + 80, 140, 20);
+            return getTwoColumnToggleRect(panel, 1, true);
         }
         if (ITEM_CROSS_DIMENSION_TRAVEL_LABEL.equals(item)) {
             return new LayoutRect(panel.x, panel.y, 0, 0);
         }
         if (ITEM_CROSS_DIMENSION_TRAVEL_TOGGLE.equals(item)) {
-            return new LayoutRect(panel.x + 15, panel.y + 108, 140, 20);
+            return getTwoColumnToggleRect(panel, 2, false);
         }
         if (ITEM_INTERFERENCE_LABEL.equals(item)) {
             return new LayoutRect(panel.x, panel.y, 0, 0);
         }
         if (ITEM_INTERFERENCE_TOGGLE.equals(item)) {
-            return new LayoutRect(panel.x + panel.width - 155, panel.y + 108, 140, 20);
+            return getTwoColumnToggleRect(panel, 2, true);
         }
         if (ITEM_PRESET_LABEL.equals(item)) {
             return new LayoutRect(panel.x, panel.y, 0, 0);
         }
         if (ITEM_PRESET_TOGGLE.equals(item)) {
-            return new LayoutRect(panel.x + 15, panel.y + 136, 140, 20);
+            return getTwoColumnToggleRect(panel, 3, false);
         }
         if (ITEM_FADE_COLOR_LABEL.equals(item)) {
             return new LayoutRect(panel.x, panel.y, 0, 0);
         }
         if (ITEM_FADE_COLOR_TOGGLE.equals(item)) {
-            return new LayoutRect(panel.x + panel.width - 155, panel.y + 136, 140, 20);
+            return getTwoColumnToggleRect(panel, 3, true);
         }
         if (ITEM_SOUND_PACK_LABEL.equals(item)) {
             return new LayoutRect(panel.x, panel.y, 0, 0);
@@ -3010,25 +3056,25 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
             return new LayoutRect(panel.x, panel.y, 0, 0);
         }
         if (ITEM_FALLBACK_CHUNK_FADE_TOGGLE.equals(item)) {
-            return new LayoutRect(panel.x + 15, panel.y + 80, 140, 20);
+            return getTwoColumnToggleRect(panel, 1, false);
         }
         if (ITEM_VANILLA_TP_LABEL.equals(item)) {
             return new LayoutRect(panel.x, panel.y, 0, 0);
         }
         if (ITEM_VANILLA_TP_TOGGLE.equals(item)) {
-            return new LayoutRect(panel.x + panel.width - 155, panel.y + 80, 140, 20);
+            return getTwoColumnToggleRect(panel, 1, true);
         }
         if (ITEM_JOURNEYMAP_LABEL.equals(item)) {
             return new LayoutRect(panel.x, panel.y, 0, 0);
         }
         if (ITEM_JOURNEYMAP_TOGGLE.equals(item)) {
-            return new LayoutRect(panel.x + 15, panel.y + 108, 140, 20);
+            return getTwoColumnToggleRect(panel, 2, false);
         }
         if (ITEM_PORTALS_LABEL.equals(item)) {
             return new LayoutRect(panel.x, panel.y, 0, 0);
         }
         if (ITEM_PORTALS_TOGGLE.equals(item)) {
-            return new LayoutRect(panel.x + panel.width - 155, panel.y + 108, 140, 20);
+            return getTwoColumnToggleRect(panel, 2, true);
         }
         if (ITEM_SOUND_MODE_LABEL.equals(item)) {
             return new LayoutRect(panel.x, panel.y, 0, 0);
@@ -3040,13 +3086,13 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
             return new LayoutRect(panel.x, panel.y, 0, 0);
         }
         if (ITEM_WARP_PLATE_TOGGLE.equals(item)) {
-            return new LayoutRect(panel.x + 15, panel.y + 52, 140, 20);
+            return getTwoColumnToggleRect(panel, 0, false);
         }
         if (ITEM_EXTERNAL_TELEPORT_LABEL.equals(item)) {
             return new LayoutRect(panel.x, panel.y, 0, 0);
         }
         if (ITEM_EXTERNAL_TELEPORT_TOGGLE.equals(item)) {
-            return new LayoutRect(panel.x + panel.width - 155, panel.y + 52, 140, 20);
+            return getTwoColumnToggleRect(panel, 0, true);
         }
         if (ITEM_MINECRAFT_VOLUME_SLIDER.equals(item)) {
             return new LayoutRect(panel.x + 15, panel.y + 82, panel.width - 30, SingleValueSlider.HEIGHT);
