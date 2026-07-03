@@ -146,15 +146,22 @@ Toutes les versions publiées pour ce port NeoForge doivent être **préfixées 
 
 L'IA ne doit **jamais** publier une version NeoForge sans le préfixe `neoforge-`.
 
-#### Changelog obligatoire par version
+#### Changelog obligatoire par version (bilingue EN + FR)
 
-Avant chaque nouvelle release, l'IA doit **mettre à jour `CHANGELOG.md`** à la racine du projet avec les nouveautés, correctifs et changements de la version concernée. Ce fichier est la source unique du changelog envoyé à Modrinth et CurseForge lors du déploiement CI/CD.
+Avant chaque nouvelle release, l'IA doit mettre à jour **deux fichiers** à la racine du projet :
+
+| Fichier | Plateforme | Format |
+|---------|------------|--------|
+| `CHANGELOG.md` | Modrinth | Markdown |
+| `CHANGELOG_CURSEFORGE.html` | CurseForge | HTML (le Markdown s'affiche mal sur CurseForge) |
 
 Règles :
-1. Une section par version, intitulée exactement comme `mod_version` (ex. `## neoforge-1.0.1`).
-2. Contenu structuré (au minimum : **Ajouts**, **Corrections**, **Modifications** — ou équivalent EN si bilingue).
-3. La section de la version à publier doit être rédigée **avant** de créer le tag Git ; pas de release sans changelog à jour.
-4. Ne pas réutiliser le `README.md` comme changelog de release.
+1. **Bilingue obligatoire** : chaque version doit contenir une section **English** et une section **Français** avec le même contenu traduit.
+2. Une section par version dans `CHANGELOG.md`, intitulée exactement comme `mod_version` (ex. `## neoforge-1.0.1`).
+3. `CHANGELOG_CURSEFORGE.html` ne contient que la **version en cours de publication** (pas l'historique complet).
+4. Contenu structuré (au minimum : Added/Ajouts, Fixed/Corrections, Changed/Modifications).
+5. La section de la version à publier doit être rédigée **avant** de créer le tag Git ; pas de release sans changelog à jour.
+6. Ne pas réutiliser le `README.md` comme changelog de release.
 
 #### Gestion dynamique des types de versions dans Gradle
 
@@ -169,7 +176,7 @@ L'IA doit s'assurer que le fichier `build.gradle` utilise une logique ternaire b
 Avant de générer une commande de release, l'IA doit valider :
 
 1. Que `mod_version` dans `gradle.properties` respecte le préfixe `neoforge-`.
-2. Que `CHANGELOG.md` contient une section complète pour la version à publier.
+2. Que `CHANGELOG.md` (Markdown bilingue) et `CHANGELOG_CURSEFORGE.html` (HTML bilingue) sont à jour pour la version à publier.
 3. Que les variables d'environnement `MODRINTH_TOKEN` et `CURSEFORGE_TOKEN` sont correctement appelées dans le script du workflow GitHub.
 4. Que les IDs de projets (`projectId` pour Modrinth et ID numérique CurseForge dans la tâche `curseforge` du `build.gradle`) sont correctement déclarés.
 5. Qu'aucun jeton d'authentification (Token API) n'est écrit en dur dans le code source du projet. Ils doivent impérativement transiter par les secrets de dépôt GitHub (`${{ secrets.MODRINTH_TOKEN }}` et `${{ secrets.CURSEFORGE_TOKEN }}`).
@@ -241,7 +248,7 @@ Avant de générer une commande de release, l'IA doit valider :
   - Workflow `.github/workflows/publish.yml` : déclenchement sur tag `v*`, Java 21, `./gradlew build modrinth curseforge`.
   - Tokens via secrets GitHub (`MODRINTH_TOKEN`, `CURSEFORGE_TOKEN`) — jamais en dur dans le code.
   - Détection dynamique du type de release (alpha / beta / release) selon `project.version`.
-  - Nomenclature `neoforge-` obligatoire + `CHANGELOG.md` requis par version avant publication.
+  - Nomenclature `neoforge-` obligatoire + changelog bilingue EN/FR (`CHANGELOG.md` + `CHANGELOG_CURSEFORGE.html`) requis par version.
 
 ### 🔄 À faire
 - **Effet Shading de Caméra & Exposition GLSL** (en pause) : finaliser et valider en jeu le post-processing `satellite_camera`. Réactiver via `enableSatelliteCameraFx` + page config dédiée quand prêt.

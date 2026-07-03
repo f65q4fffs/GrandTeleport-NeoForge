@@ -197,10 +197,18 @@ def releaseType = project.version.toString().contains('alpha')
         ? 'alpha'
         : (project.version.toString().contains('beta') ? 'beta' : 'release')
 
-def publishChangelogFile = rootProject.file('CHANGELOG.md')
-def publishChangelog = publishChangelogFile.exists()
-        ? publishChangelogFile.text
-        : { throw new GradleException('CHANGELOG.md is required before publishing. Update it with release notes for ' + project.version + '.') }()
+def publishChangelogMd = rootProject.file('CHANGELOG.md')
+def publishChangelogHtml = rootProject.file('CHANGELOG_CURSEFORGE.html')
+
+def requireChangelog = { file, label ->
+    if (!file.exists()) {
+        throw new GradleException(label + ' is required before publishing. Update it with release notes for ' + project.version + '.')
+    }
+    return file.text
+}
+
+def modrinthChangelog = requireChangelog(publishChangelogMd, 'CHANGELOG.md')
+def curseforgeChangelog = requireChangelog(publishChangelogHtml, 'CHANGELOG_CURSEFORGE.html')
 
 modrinth {
     token = System.getenv('MODRINTH_TOKEN')
@@ -211,7 +219,7 @@ modrinth {
     uploadFile = jar
     gameVersions = [minecraft_version]
     loaders = ['neoforge']
-    changelog = publishChangelog
+    changelog = modrinthChangelog
 }
 
 tasks.register('curseforge', net.darkhax.curseforgegradle.TaskPublishCurseForge) {
@@ -219,8 +227,8 @@ tasks.register('curseforge', net.darkhax.curseforgegradle.TaskPublishCurseForge)
 
     // https://www.curseforge.com/minecraft/mc-mods/grandteleport-neoforge
     def mainFile = upload('1594881', jar)
-    mainFile.changelog = publishChangelog
-    mainFile.changelogType = 'markdown'
+    mainFile.changelog = curseforgeChangelog
+    mainFile.changelogType = 'html'
     mainFile.releaseType = releaseType
     mainFile.displayName = "${mod_name} ${project.version} (NeoForge ${minecraft_version})"
     mainFile.addGameVersion(minecraft_version)
