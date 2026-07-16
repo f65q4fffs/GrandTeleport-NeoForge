@@ -46,6 +46,11 @@
   "gtalike_teleport.config.satellite.title": "Satellite Camera FX",
   "gtalike_teleport.config.satellite.desc": "Tune gamma pulses, color grade and plunge bloom live in-game.",
 
+  "gtalike_teleport.option.smooth_zoom_out_on": "Smooth Zoom-Out: ON",
+  "gtalike_teleport.option.smooth_zoom_out_off": "Smooth Zoom-Out: OFF",
+  "gtalike_teleport.option.smooth_zoom_in_on": "Smooth Zoom-In: ON",
+  "gtalike_teleport.option.smooth_zoom_in_off": "Smooth Zoom-In: OFF",
+
   "gtalike_teleport.option.satellite_on": "Satellite FX: ON",
   "gtalike_teleport.option.satellite_off": "Satellite FX: OFF",
   "gtalike_teleport.option.satellite_gamma_strength": "Zoom gamma strength",
@@ -98,6 +103,9 @@
   "gtalike_teleport.feedback.sound_pack_status": "Current sound mode: %s",
   "gtalike_teleport.tooltip.minecraft_volume": "Set game default sound volume during teleportation.",
   "gtalike_teleport.tooltip.custom_volume": "Set custom/GTA sound volume during teleportation.",
+  "gtalike_teleport.tooltip.smooth_zoom_out": "Use a single continuous easing curve for zoom-out instead of three discrete stages.",
+  "gtalike_teleport.tooltip.smooth_zoom_in": "Use a single continuous easing curve for zoom-in instead of three discrete stages.",
+
   "gtalike_teleport.tooltip.satellite_enable": "Enable satellite color grade and zoom-step gamma pulses.",
   "gtalike_teleport.tooltip.satellite_gamma_strength": "How strong each zoom-step gamma flash is (GTA-style).",
   "gtalike_teleport.tooltip.satellite_gamma_decay": "How many ticks each gamma pulse takes to fade out.",
