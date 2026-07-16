@@ -124,6 +124,8 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
     private static final String ITEM_FALLBACK_CHUNK_FADE_TOGGLE = "fallback_chunk_fade_toggle";
     private static final String ITEM_PRESET_LABEL = "preset_label";
     private static final String ITEM_PRESET_TOGGLE = "preset_toggle";
+    private static final String ITEM_SMOOTH_ZOOM_OUT_TOGGLE = "smooth_zoom_out_toggle";
+    private static final String ITEM_SMOOTH_ZOOM_IN_TOGGLE = "smooth_zoom_in_toggle";
 
     private static final String ITEM_SOUND_PACK_LABEL = "sound_pack_label";
     private static final String ITEM_SOUND_PACK_TOGGLE = "sound_pack_toggle";
@@ -138,6 +140,8 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
     private ConfigPage currentPage = ConfigPage.GENERAL;
     private boolean linked;
     private boolean effectEnabled;
+    private boolean smoothZoomOutEnabled;
+    private boolean smoothZoomInEnabled;
     private boolean movementAllowed;
     private boolean crossDimensionTravelEnabled;
     private boolean layoutDebugEnabled;
@@ -165,6 +169,8 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
     private StageHeightSlider linkedSlider;
     private StageHeightSlider zoomOutSlider;
     private StageHeightSlider zoomInSlider;
+    private SingleValueSlider smoothZoomOutSlider;
+    private SingleValueSlider smoothZoomInSlider;
     private SingleValueSlider zoomStageGlideSlider;
     private SingleValueSlider bodyHeightSlider;
     private SingleValueSlider bodyGlideSlider;
@@ -186,6 +192,8 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
     private Button[] pageTabButtons = new Button[0];
     private Button effectToggleButton;
     private Button movementToggleButton;
+    private Button smoothZoomOutToggleButton;
+    private Button smoothZoomInToggleButton;
     private Button crossDimensionTravelToggleButton;
     private Button soundModeToggleButton;
     private Button warpPlateToggleButton;
@@ -226,6 +234,8 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
         this.selectedZoomDimension = getInitialZoomDimension();
         this.linked = GtaLikeTeleportConfig.areZoomHeightsLinked(this.selectedZoomDimension);
         this.effectEnabled = GtaLikeTeleportConfig.isEffectEnabled();
+        this.smoothZoomOutEnabled = GtaLikeTeleportConfig.isSmoothZoomOutEnabled(this.selectedZoomDimension);
+        this.smoothZoomInEnabled = GtaLikeTeleportConfig.isSmoothZoomInEnabled(this.selectedZoomDimension);
         this.movementAllowed = !GtaLikeTeleportConfig.isPlayerFreezeEnabled();
         this.crossDimensionTravelEnabled = GtaLikeTeleportConfig.isCrossDimensionTravelEnabled();
         this.layoutDebugEnabled = GtaLikeTeleportConfig.isConfigLayoutEditorButtonVisible() && GtaLikeTeleportConfig.isConfigLayoutDebugEnabled();
@@ -345,6 +355,8 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
     private void resetWidgetReferences() {
         this.zoomOutSlider = null;
         this.zoomInSlider = null;
+        this.smoothZoomOutSlider = null;
+        this.smoothZoomInSlider = null;
         this.zoomStageGlideSlider = null;
         this.bodyHeightSlider = null;
         this.bodyGlideSlider = null;
@@ -361,6 +373,8 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
         this.pageTabButtons = new Button[0];
         this.effectToggleButton = null;
         this.movementToggleButton = null;
+        this.smoothZoomOutToggleButton = null;
+        this.smoothZoomInToggleButton = null;
         this.crossDimensionTravelToggleButton = null;
         this.soundModeToggleButton = null;
         this.warpPlateToggleButton = null;
@@ -394,41 +408,83 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
 
     private void initZoomWidgets() {
         LayoutRect outSliderRect = getItemRect(ITEM_ZOOM_OUT_SLIDER);
-        this.zoomOutSlider = addRenderableWidget(new StageHeightSlider(
-                outSliderRect.x,
-                outSliderRect.y,
-                outSliderRect.width,
-                getItemComponent(ITEM_ZOOM_OUT_SLIDER),
-                this.zoomOutHeights,
-                values -> {
-                    this.zoomOutHeights = values;
-                    if (this.linked) {
-                        this.zoomInHeights = values.clone();
-                        if (this.zoomInSlider != null) {
-                            this.zoomInSlider.setValues(this.zoomInHeights);
-                        }
-                    }
-                    saveHeights();
-                }
-        ));
-        if (this.linked) {
-            this.zoomInHeights = this.zoomOutHeights.clone();
-        }
         LayoutRect inSliderRect = getItemRect(ITEM_ZOOM_IN_SLIDER);
-        this.zoomInSlider = addRenderableWidget(new StageHeightSlider(
-                inSliderRect.x,
-                inSliderRect.y,
-                inSliderRect.width,
-                getItemComponent(ITEM_ZOOM_IN_SLIDER),
-                this.zoomInHeights,
-                values -> {
-                    if (!this.linked) {
-                        this.zoomInHeights = values;
+
+        if (this.smoothZoomOutEnabled) {
+            double maxHeight = this.zoomOutHeights[2];
+            this.smoothZoomOutSlider = addRenderableWidget(new SingleValueSlider(
+                    outSliderRect.x, outSliderRect.y, outSliderRect.width,
+                    getItemComponent(ITEM_ZOOM_OUT_SLIDER),
+                    maxHeight, 20.0D, 512.0D, 1.0D, true, "",
+                    value -> {
+                        this.zoomOutHeights = new double[]{value * 0.5D, value * 0.75D, value};
+                        if (this.linked) {
+                            this.zoomInHeights = this.zoomOutHeights.clone();
+                            if (this.smoothZoomInEnabled && this.smoothZoomInSlider != null) {
+                                this.smoothZoomInSlider.setValue(value);
+                            } else if (!this.smoothZoomInEnabled && this.zoomInSlider != null) {
+                                this.zoomInSlider.setValues(this.zoomInHeights);
+                            }
+                        }
                         saveHeights();
                     }
-                }
-        ));
-        this.zoomInSlider.setEditable(!this.linked);
+            ));
+        } else {
+            this.smoothZoomOutSlider = null;
+            this.zoomOutSlider = addRenderableWidget(new StageHeightSlider(
+                    outSliderRect.x, outSliderRect.y, outSliderRect.width,
+                    getItemComponent(ITEM_ZOOM_OUT_SLIDER),
+                    this.zoomOutHeights,
+                    values -> {
+                        this.zoomOutHeights = values;
+                        if (this.linked) {
+                            this.zoomInHeights = values.clone();
+                            if (this.zoomInSlider != null) {
+                                this.zoomInSlider.setValues(this.zoomInHeights);
+                            }
+                        }
+                        saveHeights();
+                    }
+            ));
+        }
+
+        if (this.smoothZoomInEnabled) {
+            if (this.linked) {
+                this.zoomInHeights = this.zoomOutHeights.clone();
+            }
+            double inMaxHeight = this.zoomInHeights[2];
+            this.smoothZoomInSlider = addRenderableWidget(new SingleValueSlider(
+                    inSliderRect.x, inSliderRect.y, inSliderRect.width,
+                    getItemComponent(ITEM_ZOOM_IN_SLIDER),
+                    inMaxHeight, 20.0D, 512.0D, 1.0D, true, "",
+                    value -> {
+                        if (!this.linked) {
+                            this.zoomInHeights = new double[]{value * 0.5D, value * 0.75D, value};
+                            saveHeights();
+                        }
+                    }
+            ));
+            this.smoothZoomInSlider.active = !this.linked;
+        } else {
+            this.smoothZoomInSlider = null;
+            if (this.linked) {
+                this.zoomInHeights = this.zoomOutHeights.clone();
+            }
+            this.zoomInSlider = addRenderableWidget(new StageHeightSlider(
+                    inSliderRect.x, inSliderRect.y, inSliderRect.width,
+                    getItemComponent(ITEM_ZOOM_IN_SLIDER),
+                    this.zoomInHeights,
+                    values -> {
+                        if (!this.linked) {
+                            this.zoomInHeights = values;
+                            saveHeights();
+                        }
+                    }
+            ));
+            this.zoomInSlider.setEditable(!this.linked);
+        }
+
+        addSmoothZoomToggles();
 
         LayoutRect linkRect = getItemRect(ITEM_LINK_BUTTON);
         this.linkButton = addRenderableWidget(new LinkLockButton(linkRect.x, linkRect.y, linkRect.width, linkRect.height, this::toggleLinked));
@@ -650,15 +706,62 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
 
     private void initAdvancedTwoWidgets() {
         LayoutRect outRect = getItemRect(ITEM_ZOOM_OUT_TICKS_FIELD);
-        this.zoomOutTicksEditBox = addStageTicksEditBox(outRect, this.zoomOutStageTicks, values -> {
-            this.zoomOutStageTicks = values;
-            saveStageTicks();
-        });
+        if (this.smoothZoomOutEnabled) {
+            LayoutRect narrowRect = new LayoutRect(outRect.x, outRect.y, 60, outRect.height);
+            int totalOutTicks = this.zoomOutStageTicks[0] + this.zoomOutStageTicks[1] + this.zoomOutStageTicks[2];
+            this.zoomOutTicksEditBox = addTickEditBox(narrowRect, totalOutTicks, value -> {
+                int each = Math.max(1, value / 3);
+                this.zoomOutStageTicks = new int[]{each, each, Math.max(1, value - each * 2)};
+                saveStageTicks();
+            });
+        } else {
+            this.zoomOutTicksEditBox = addStageTicksEditBox(outRect, this.zoomOutStageTicks, values -> {
+                this.zoomOutStageTicks = values;
+                saveStageTicks();
+            });
+        }
+
         LayoutRect inRect = getItemRect(ITEM_ZOOM_IN_TICKS_FIELD);
-        this.zoomInTicksEditBox = addStageTicksEditBox(inRect, this.zoomInStageTicks, values -> {
-            this.zoomInStageTicks = values;
-            saveStageTicks();
-        });
+        if (this.smoothZoomInEnabled) {
+            LayoutRect narrowRect = new LayoutRect(inRect.x, inRect.y, 60, inRect.height);
+            int totalInTicks = this.zoomInStageTicks[0] + this.zoomInStageTicks[1] + this.zoomInStageTicks[2];
+            this.zoomInTicksEditBox = addTickEditBox(narrowRect, totalInTicks, value -> {
+                int each = Math.max(1, value / 3);
+                this.zoomInStageTicks = new int[]{each, each, Math.max(1, value - each * 2)};
+                saveStageTicks();
+            });
+        } else {
+            this.zoomInTicksEditBox = addStageTicksEditBox(inRect, this.zoomInStageTicks, values -> {
+                this.zoomInStageTicks = values;
+                saveStageTicks();
+            });
+        }
+
+        addSmoothZoomToggles();
+    }
+
+    private void addSmoothZoomToggles() {
+        LayoutRect outRect = getItemRect(ITEM_SMOOTH_ZOOM_OUT_TOGGLE);
+        this.smoothZoomOutToggleButton = addRenderableWidget(new IconButton(
+                outRect.x, outRect.y, outRect.width, outRect.height,
+                Component.empty(),
+                new ItemStack(Items.SPYGLASS),
+                () -> this.smoothZoomOutEnabled,
+                null,
+                button -> toggleSmoothZoomOut()
+        ));
+        this.smoothZoomOutToggleButton.setTooltip(Tooltip.create(Component.translatable("gtalike_teleport.tooltip.smooth_zoom_out")));
+
+        LayoutRect inRect = getItemRect(ITEM_SMOOTH_ZOOM_IN_TOGGLE);
+        this.smoothZoomInToggleButton = addRenderableWidget(new IconButton(
+                inRect.x, inRect.y, inRect.width, inRect.height,
+                Component.empty(),
+                new ItemStack(Items.SPYGLASS),
+                () -> this.smoothZoomInEnabled,
+                null,
+                button -> toggleSmoothZoomIn()
+        ));
+        this.smoothZoomInToggleButton.setTooltip(Tooltip.create(Component.translatable("gtalike_teleport.tooltip.smooth_zoom_in")));
     }
 
     private void initAdvancedThreeWidgets() {
@@ -810,6 +913,20 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
     private String formatStageTicks(int[] values) {
         int[] sanitized = GtaLikeTeleportConfig.sanitizeStageTicks(values);
         return sanitized[0] + " / " + sanitized[1] + " / " + sanitized[2];
+    }
+
+    private String formatZoomOutTicks() {
+        if (this.smoothZoomOutEnabled) {
+            return Integer.toString(this.zoomOutStageTicks[0] + this.zoomOutStageTicks[1] + this.zoomOutStageTicks[2]);
+        }
+        return formatStageTicks(this.zoomOutStageTicks);
+    }
+
+    private String formatZoomInTicks() {
+        if (this.smoothZoomInEnabled) {
+            return Integer.toString(this.zoomInStageTicks[0] + this.zoomInStageTicks[1] + this.zoomInStageTicks[2]);
+        }
+        return formatStageTicks(this.zoomInStageTicks);
     }
 
     private void initPageNavigationWidgets() {
@@ -996,10 +1113,10 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
             setEditBoxValue(this.zoomStageGlideTicksEditBox, Integer.toString(this.zoomStageGlideTicks));
         }
         if (this.zoomOutTicksEditBox != null && this.zoomOutTicksEditBox.isFocused() && !this.zoomOutTicksEditBox.isMouseOver(mouseX, mouseY)) {
-            setEditBoxValue(this.zoomOutTicksEditBox, formatStageTicks(this.zoomOutStageTicks));
+            setEditBoxValue(this.zoomOutTicksEditBox, formatZoomOutTicks());
         }
         if (this.zoomInTicksEditBox != null && this.zoomInTicksEditBox.isFocused() && !this.zoomInTicksEditBox.isMouseOver(mouseX, mouseY)) {
-            setEditBoxValue(this.zoomInTicksEditBox, formatStageTicks(this.zoomInStageTicks));
+            setEditBoxValue(this.zoomInTicksEditBox, formatZoomInTicks());
         }
         if (this.bodyGlideTicksEditBox != null && this.bodyGlideTicksEditBox.isFocused() && !this.bodyGlideTicksEditBox.isMouseOver(mouseX, mouseY)) {
             setEditBoxValue(this.bodyGlideTicksEditBox, Integer.toString(this.bodyGlideTicks));
@@ -1011,8 +1128,8 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
 
     private void normalizeValueEditors() {
         setEditBoxValue(this.zoomStageGlideTicksEditBox, Integer.toString(this.zoomStageGlideTicks));
-        setEditBoxValue(this.zoomOutTicksEditBox, formatStageTicks(this.zoomOutStageTicks));
-        setEditBoxValue(this.zoomInTicksEditBox, formatStageTicks(this.zoomInStageTicks));
+        setEditBoxValue(this.zoomOutTicksEditBox, formatZoomOutTicks());
+        setEditBoxValue(this.zoomInTicksEditBox, formatZoomInTicks());
         setEditBoxValue(this.bodyGlideTicksEditBox, Integer.toString(this.bodyGlideTicks));
         setEditBoxValue(this.playerHideTicksEditBox, Integer.toString(this.localPlayerHideTicks));
     }
@@ -1021,6 +1138,30 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
         this.effectEnabled = !this.effectEnabled;
         GtaLikeTeleportConfig.setEffectEnabled(this.effectEnabled);
         updateGeneralButtons();
+    }
+
+    private void toggleSmoothZoomOut() {
+        this.smoothZoomOutEnabled = !this.smoothZoomOutEnabled;
+        GtaLikeTeleportConfig.setSmoothZoomOutEnabled(this.selectedZoomDimension, this.smoothZoomOutEnabled);
+        if (this.linked) {
+            this.smoothZoomInEnabled = this.smoothZoomOutEnabled;
+            GtaLikeTeleportConfig.setSmoothZoomInEnabled(this.selectedZoomDimension, this.smoothZoomInEnabled);
+        }
+        if (this.currentPage == ConfigPage.ZOOM || this.currentPage == ConfigPage.ZOOM_STAGE_2) {
+            rebuildWidgets();
+        }
+    }
+
+    private void toggleSmoothZoomIn() {
+        this.smoothZoomInEnabled = !this.smoothZoomInEnabled;
+        GtaLikeTeleportConfig.setSmoothZoomInEnabled(this.selectedZoomDimension, this.smoothZoomInEnabled);
+        if (this.linked) {
+            this.smoothZoomOutEnabled = this.smoothZoomInEnabled;
+            GtaLikeTeleportConfig.setSmoothZoomOutEnabled(this.selectedZoomDimension, this.smoothZoomOutEnabled);
+        }
+        if (this.currentPage == ConfigPage.ZOOM || this.currentPage == ConfigPage.ZOOM_STAGE_2) {
+            rebuildWidgets();
+        }
     }
 
     private void toggleMovementAllowed() {
@@ -1453,6 +1594,8 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
         }
         this.selectedZoomDimension = dimension;
         loadZoomHeightState();
+        this.smoothZoomOutEnabled = GtaLikeTeleportConfig.isSmoothZoomOutEnabled(dimension);
+        this.smoothZoomInEnabled = GtaLikeTeleportConfig.isSmoothZoomInEnabled(dimension);
         this.layoutEditAction = LayoutEditAction.NONE;
         this.editingLayoutItem = null;
         this.editingRect = null;
@@ -1503,6 +1646,10 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
             LayoutRect rect = getItemRect(ITEM_ZOOM_OUT_SLIDER);
             setWidgetRectangle(this.zoomOutSlider, rect.width, rect.height, rect.x, rect.y);
         }
+        if (this.smoothZoomOutSlider != null) {
+            LayoutRect rect = getItemRect(ITEM_ZOOM_OUT_SLIDER);
+            setWidgetRectangle(this.smoothZoomOutSlider, rect.width, rect.height, rect.x, rect.y);
+        }
         if (this.zoomInSlider != null) {
             if (this.linked) {
                 this.zoomInHeights = this.zoomOutHeights.clone();
@@ -1511,6 +1658,10 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
             this.zoomInSlider.setEditable(!this.linked);
             LayoutRect rect = getItemRect(ITEM_ZOOM_IN_SLIDER);
             setWidgetRectangle(this.zoomInSlider, rect.width, rect.height, rect.x, rect.y);
+        }
+        if (this.smoothZoomInSlider != null) {
+            LayoutRect rect = getItemRect(ITEM_ZOOM_IN_SLIDER);
+            setWidgetRectangle(this.smoothZoomInSlider, rect.width, rect.height, rect.x, rect.y);
         }
         if (this.linkButton != null) {
             LayoutRect rect = getItemRect(ITEM_LINK_BUTTON);
@@ -1530,6 +1681,14 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
         if (this.crossDimensionTravelToggleButton != null) {
             LayoutRect rect = getItemRect(ITEM_CROSS_DIMENSION_TRAVEL_TOGGLE);
             setWidgetRectangle(this.crossDimensionTravelToggleButton, rect.width, rect.height, rect.x, rect.y);
+        }
+        if (this.smoothZoomOutToggleButton != null) {
+            LayoutRect rect = getItemRect(ITEM_SMOOTH_ZOOM_OUT_TOGGLE);
+            setWidgetRectangle(this.smoothZoomOutToggleButton, rect.width, rect.height, rect.x, rect.y);
+        }
+        if (this.smoothZoomInToggleButton != null) {
+            LayoutRect rect = getItemRect(ITEM_SMOOTH_ZOOM_IN_TOGGLE);
+            setWidgetRectangle(this.smoothZoomInToggleButton, rect.width, rect.height, rect.x, rect.y);
         }
         if (this.presetToggleButton != null) {
             LayoutRect rect = getItemRect(ITEM_PRESET_TOGGLE);
@@ -1595,7 +1754,7 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
             updateScaledEditBox(this.zoomOutTicksEditBox);
             this.zoomOutTicksEditBox.setEditable(!this.layoutDebugEnabled);
             if (!this.zoomOutTicksEditBox.isFocused()) {
-                setEditBoxValue(this.zoomOutTicksEditBox, formatStageTicks(this.zoomOutStageTicks));
+                setEditBoxValue(this.zoomOutTicksEditBox, formatZoomOutTicks());
             }
         }
         if (this.zoomInTicksEditBox != null) {
@@ -1604,7 +1763,7 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
             updateScaledEditBox(this.zoomInTicksEditBox);
             this.zoomInTicksEditBox.setEditable(!this.layoutDebugEnabled);
             if (!this.zoomInTicksEditBox.isFocused()) {
-                setEditBoxValue(this.zoomInTicksEditBox, formatStageTicks(this.zoomInStageTicks));
+                setEditBoxValue(this.zoomInTicksEditBox, formatZoomInTicks());
             }
         }
         if (this.bodyHeightSlider != null) {
@@ -2610,7 +2769,9 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
             items.add(ITEM_PREV_PAGE_BUTTON);
             items.add(ITEM_NEXT_PAGE_BUTTON);
             items.add(ITEM_ZOOM_OUT_SLIDER);
+            items.add(ITEM_SMOOTH_ZOOM_OUT_TOGGLE);
             items.add(ITEM_ZOOM_IN_SLIDER);
+            items.add(ITEM_SMOOTH_ZOOM_IN_TOGGLE);
             items.add(ITEM_DIMENSION_OVERWORLD);
             items.add(ITEM_DIMENSION_NETHER);
             items.add(ITEM_DIMENSION_END);
@@ -2631,8 +2792,10 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
             items.add(ITEM_NEXT_PAGE_BUTTON);
             items.add(ITEM_ZOOM_OUT_TICKS_LABEL);
             items.add(ITEM_ZOOM_OUT_TICKS_FIELD);
+            items.add(ITEM_SMOOTH_ZOOM_OUT_TOGGLE);
             items.add(ITEM_ZOOM_IN_TICKS_LABEL);
             items.add(ITEM_ZOOM_IN_TICKS_FIELD);
+            items.add(ITEM_SMOOTH_ZOOM_IN_TOGGLE);
         } else if (this.currentPage == ConfigPage.SOUNDS) {
             items.add(ITEM_SOUNDS_TITLE);
             items.add(ITEM_SOUNDS_DESCRIPTION);
@@ -2775,6 +2938,10 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
                 || ITEM_DIMENSION_END.equals(item);
     }
 
+    private static boolean isSmoothZoomToggleItem(String item) {
+        return ITEM_SMOOTH_ZOOM_OUT_TOGGLE.equals(item) || ITEM_SMOOTH_ZOOM_IN_TOGGLE.equals(item);
+    }
+
     private LayoutRect getTwoColumnToggleRect(LayoutRect panel, int rowIndex, boolean rightColumn) {
         int sideMargin = 15;
         int columnGap = 12;
@@ -2833,6 +3000,18 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
         }
         if (ITEM_ZOOM_IN_SLIDER.equals(item)) {
             return new LayoutRect(panel.x, sliderY + 52, sliderWidth, StageHeightSlider.HEIGHT);
+        }
+        if (ITEM_SMOOTH_ZOOM_OUT_TOGGLE.equals(item)) {
+            if (this.currentPage == ConfigPage.ZOOM_STAGE_2) {
+                return new LayoutRect(panel.x + panel.width - 44, sliderY + 8, 44, 20);
+            }
+            return new LayoutRect(panel.x + sliderWidth + 6, sliderY + 6, 44, 20);
+        }
+        if (ITEM_SMOOTH_ZOOM_IN_TOGGLE.equals(item)) {
+            if (this.currentPage == ConfigPage.ZOOM_STAGE_2) {
+                return new LayoutRect(panel.x + panel.width - 44, sliderY + 52, 44, 20);
+            }
+            return new LayoutRect(panel.x + sliderWidth + 6, sliderY + 58, 44, 20);
         }
         if (ITEM_EFFECT_LABEL.equals(item)) {
             return new LayoutRect(panel.x, panel.y, 0, 0);
@@ -2925,13 +3104,13 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
             return new LayoutRect(panel.x + 20, sliderY + 14, Math.max(120, panel.width - 210), 12);
         }
         if (ITEM_ZOOM_OUT_TICKS_FIELD.equals(item)) {
-            return new LayoutRect(panel.x + panel.width - 170, sliderY + 8, 150, 20);
+            return new LayoutRect(panel.x + panel.width - 186, sliderY + 8, 136, 20);
         }
         if (ITEM_ZOOM_IN_TICKS_LABEL.equals(item)) {
             return new LayoutRect(panel.x + 20, sliderY + 58, Math.max(120, panel.width - 210), 12);
         }
         if (ITEM_ZOOM_IN_TICKS_FIELD.equals(item)) {
-            return new LayoutRect(panel.x + panel.width - 170, sliderY + 52, 150, 20);
+            return new LayoutRect(panel.x + panel.width - 186, sliderY + 52, 136, 20);
         }
         if (ITEM_BODY_HEIGHT_SLIDER.equals(item)) {
             return new LayoutRect(panel.x, sliderY, sliderWidth, SingleValueSlider.HEIGHT);
@@ -2973,7 +3152,7 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
         } else if (ITEM_PREV_PAGE_BUTTON.equals(item) || ITEM_NEXT_PAGE_BUTTON.equals(item) || isPageTabItem(item)) {
             minWidth = 24;
             minHeight = 16;
-        } else if (ITEM_EFFECT_TOGGLE.equals(item) || ITEM_MOVEMENT_TOGGLE.equals(item) || ITEM_CROSS_DIMENSION_TRAVEL_TOGGLE.equals(item) || ITEM_SOUND_MODE_TOGGLE.equals(item) || ITEM_WARP_PLATE_TOGGLE.equals(item) || ITEM_EXTERNAL_TELEPORT_TOGGLE.equals(item)) {
+        } else if (ITEM_EFFECT_TOGGLE.equals(item) || ITEM_MOVEMENT_TOGGLE.equals(item) || ITEM_CROSS_DIMENSION_TRAVEL_TOGGLE.equals(item) || isSmoothZoomToggleItem(item) || ITEM_SOUND_MODE_TOGGLE.equals(item) || ITEM_WARP_PLATE_TOGGLE.equals(item) || ITEM_EXTERNAL_TELEPORT_TOGGLE.equals(item)) {
             minWidth = 44;
             minHeight = 18;
         } else if (isTickFieldItem(item)) {
@@ -3017,7 +3196,7 @@ public final class GtaLikeTeleportConfigScreen extends Screen {
     private LayoutRect constrainCustomItemRect(String item, LayoutRect rect) {
         int minWidth = ITEM_LINK_BUTTON.equals(item) || isDimensionButtonItem(item) ? 4 : 1;
         int minHeight = ITEM_LINK_BUTTON.equals(item) || isDimensionButtonItem(item) ? 4 : 1;
-        if (ITEM_PREV_PAGE_BUTTON.equals(item) || ITEM_NEXT_PAGE_BUTTON.equals(item) || isPageTabItem(item) || ITEM_EFFECT_TOGGLE.equals(item) || ITEM_MOVEMENT_TOGGLE.equals(item) || ITEM_CROSS_DIMENSION_TRAVEL_TOGGLE.equals(item) || ITEM_SOUND_MODE_TOGGLE.equals(item) || ITEM_WARP_PLATE_TOGGLE.equals(item) || ITEM_EXTERNAL_TELEPORT_TOGGLE.equals(item) || isTickFieldItem(item)) {
+        if (ITEM_PREV_PAGE_BUTTON.equals(item) || ITEM_NEXT_PAGE_BUTTON.equals(item) || isPageTabItem(item) || ITEM_EFFECT_TOGGLE.equals(item) || ITEM_MOVEMENT_TOGGLE.equals(item) || ITEM_CROSS_DIMENSION_TRAVEL_TOGGLE.equals(item) || isSmoothZoomToggleItem(item) || ITEM_SOUND_MODE_TOGGLE.equals(item) || ITEM_WARP_PLATE_TOGGLE.equals(item) || ITEM_EXTERNAL_TELEPORT_TOGGLE.equals(item) || isTickFieldItem(item)) {
             minWidth = 4;
             minHeight = 4;
         }

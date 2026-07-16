@@ -9,6 +9,7 @@ import java.io.StringReader;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -69,6 +70,16 @@ public final class GtaLikeTeleportConfig {
     private static final String ENABLE_WAYSTONES_KEY = "enableWaystones";
     private static final String ENABLE_JOURNEYMAP_KEY = "enableJourneyMap";
     private static final String ENABLE_PORTALS_KEY = "enablePortals";
+    private static final Map<ZoomDimension, String> SMOOTH_ZOOM_OUT_KEYS = new HashMap<>();
+    private static final Map<ZoomDimension, String> SMOOTH_ZOOM_IN_KEYS = new HashMap<>();
+    static {
+        SMOOTH_ZOOM_OUT_KEYS.put(ZoomDimension.OVERWORLD, "smoothZoomOverworldOut");
+        SMOOTH_ZOOM_OUT_KEYS.put(ZoomDimension.NETHER, "smoothZoomNetherOut");
+        SMOOTH_ZOOM_OUT_KEYS.put(ZoomDimension.END, "smoothZoomEndOut");
+        SMOOTH_ZOOM_IN_KEYS.put(ZoomDimension.OVERWORLD, "smoothZoomOverworldIn");
+        SMOOTH_ZOOM_IN_KEYS.put(ZoomDimension.NETHER, "smoothZoomNetherIn");
+        SMOOTH_ZOOM_IN_KEYS.put(ZoomDimension.END, "smoothZoomEndIn");
+    }
     private static final String ENABLE_SATELLITE_CAMERA_FX_KEY = "enableSatelliteCameraFx";
     private static final String SATELLITE_GAMMA_STRENGTH_KEY = "satelliteGammaStrength";
     private static final String SATELLITE_GAMMA_DECAY_TICKS_KEY = "satelliteGammaDecayTicks";
@@ -92,7 +103,7 @@ public final class GtaLikeTeleportConfig {
     private static final double MAX_SATELLITE_UNIT = 1.0D;
     private static final double MIN_SATELLITE_SHADER_SCALE = 0.0D;
     private static final double MAX_SATELLITE_SHADER_SCALE = 3.0D;
-    private static final int CURRENT_CONFIG_VERSION = 8;
+    private static final int CURRENT_CONFIG_VERSION = 9;
     private static final String CONFIG_VERSION_KEY = "configVersion";
     private static final String DEFAULT_CONFIG_PROPERTIES = """
 configVersion=8
@@ -115,6 +126,12 @@ enableVanillaTp=true
 enableWaystones=true
 enableJourneyMap=true
 enablePortals=true
+smoothZoomOverworldOut=false
+smoothZoomNetherOut=false
+smoothZoomEndOut=false
+smoothZoomOverworldIn=false
+smoothZoomNetherIn=false
+smoothZoomEndIn=false
 bodyGlideHeight=0.5
 bodyGlideTicks=10
 configLayoutAspectLocked=false
@@ -234,6 +251,14 @@ zoomStageGlideTicks=13
     private static boolean enableWaystones = true;
     private static boolean enableJourneyMap = true;
     private static boolean enablePortals = true;
+    private static final EnumMap<ZoomDimension, Boolean> smoothZoomOutEnabled = new EnumMap<>(ZoomDimension.class);
+    private static final EnumMap<ZoomDimension, Boolean> smoothZoomInEnabled = new EnumMap<>(ZoomDimension.class);
+    static {
+        for (ZoomDimension dim : ZoomDimension.values()) {
+            smoothZoomOutEnabled.put(dim, false);
+            smoothZoomInEnabled.put(dim, false);
+        }
+    }
     private static boolean enableSatelliteCameraFx = false;
     private static double satelliteGammaStrength = DEFAULT_SATELLITE_GAMMA_STRENGTH;
     private static double satelliteGammaDecayTicks = DEFAULT_SATELLITE_GAMMA_DECAY_TICKS;
@@ -414,6 +439,24 @@ zoomStageGlideTicks=13
 
     public static boolean setPortalsEnabled(boolean enabled) {
         enablePortals = enabled;
+        return save();
+    }
+
+    public static boolean isSmoothZoomOutEnabled(ZoomDimension dim) {
+        return smoothZoomOutEnabled.getOrDefault(sanitizeZoomDimension(dim), false);
+    }
+
+    public static boolean setSmoothZoomOutEnabled(ZoomDimension dim, boolean enabled) {
+        smoothZoomOutEnabled.put(sanitizeZoomDimension(dim), enabled);
+        return save();
+    }
+
+    public static boolean isSmoothZoomInEnabled(ZoomDimension dim) {
+        return smoothZoomInEnabled.getOrDefault(sanitizeZoomDimension(dim), false);
+    }
+
+    public static boolean setSmoothZoomInEnabled(ZoomDimension dim, boolean enabled) {
+        smoothZoomInEnabled.put(sanitizeZoomDimension(dim), enabled);
         return save();
     }
 
@@ -1245,6 +1288,12 @@ zoomStageGlideTicks=13
         enableWaystones = Boolean.parseBoolean(properties.getProperty(ENABLE_WAYSTONES_KEY, Boolean.toString(enableWaystones)));
         enableJourneyMap = Boolean.parseBoolean(properties.getProperty(ENABLE_JOURNEYMAP_KEY, Boolean.toString(enableJourneyMap)));
         enablePortals = Boolean.parseBoolean(properties.getProperty(ENABLE_PORTALS_KEY, Boolean.toString(enablePortals)));
+        for (ZoomDimension dim : ZoomDimension.values()) {
+            String outKey = SMOOTH_ZOOM_OUT_KEYS.get(dim);
+            String inKey = SMOOTH_ZOOM_IN_KEYS.get(dim);
+            smoothZoomOutEnabled.put(dim, Boolean.parseBoolean(properties.getProperty(outKey, Boolean.toString(smoothZoomOutEnabled.get(dim)))));
+            smoothZoomInEnabled.put(dim, Boolean.parseBoolean(properties.getProperty(inKey, Boolean.toString(smoothZoomInEnabled.get(dim)))));
+        }
         enableSatelliteCameraFx = Boolean.parseBoolean(properties.getProperty(
                 ENABLE_SATELLITE_CAMERA_FX_KEY,
                 Boolean.toString(enableSatelliteCameraFx)
@@ -1402,6 +1451,12 @@ zoomStageGlideTicks=13
         }
         if (previousVersion < 8) {
             syncSoundPackProperties(properties);
+        }
+        if (previousVersion < 9) {
+            for (ZoomDimension dim : ZoomDimension.values()) {
+                properties.setProperty(SMOOTH_ZOOM_OUT_KEYS.get(dim), "false");
+                properties.setProperty(SMOOTH_ZOOM_IN_KEYS.get(dim), "false");
+            }
         }
     }
 
@@ -1563,6 +1618,10 @@ zoomStageGlideTicks=13
         properties.setProperty(ENABLE_WAYSTONES_KEY, Boolean.toString(enableWaystones));
         properties.setProperty(ENABLE_JOURNEYMAP_KEY, Boolean.toString(enableJourneyMap));
         properties.setProperty(ENABLE_PORTALS_KEY, Boolean.toString(enablePortals));
+        for (ZoomDimension dim : ZoomDimension.values()) {
+            properties.setProperty(SMOOTH_ZOOM_OUT_KEYS.get(dim), Boolean.toString(smoothZoomOutEnabled.get(dim)));
+            properties.setProperty(SMOOTH_ZOOM_IN_KEYS.get(dim), Boolean.toString(smoothZoomInEnabled.get(dim)));
+        }
         properties.setProperty(ENABLE_SATELLITE_CAMERA_FX_KEY, Boolean.toString(enableSatelliteCameraFx));
         properties.setProperty(SATELLITE_GAMMA_STRENGTH_KEY, Double.toString(satelliteGammaStrength));
         properties.setProperty(SATELLITE_GAMMA_DECAY_TICKS_KEY, Double.toString(satelliteGammaDecayTicks));

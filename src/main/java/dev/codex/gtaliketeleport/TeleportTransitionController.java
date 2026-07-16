@@ -552,12 +552,35 @@ public final class TeleportTransitionController {
 
         float frameTick = ticks + tickProgress;
         float peak = 0.0F;
-        peak = Math.max(peak, satelliteGammaPulseAfter(frameTick, getPullStageTick(0)));
-        peak = Math.max(peak, satelliteGammaPulseAfter(frameTick, getPullStageTick(1)));
-        peak = Math.max(peak, satelliteGammaPulseAfter(frameTick, getPullStageTick(2)));
-        peak = Math.max(peak, satelliteGammaPulseAfter(frameTick, getPushStageTick(1)));
-        peak = Math.max(peak, satelliteGammaPulseAfter(frameTick, getPushStageTick(2)));
-        peak = Math.max(peak, satelliteGammaPulseAfter(frameTick, getEnterHoldStartTick()) * 1.15F);
+        boolean smoothOut = GtaLikeTeleportConfig.isSmoothZoomOutEnabled(getStartZoomDimension());
+        boolean smoothIn = GtaLikeTeleportConfig.isSmoothZoomInEnabled(getCurrentZoomDimension());
+
+        if (smoothOut) {
+            int pullStart = getPullStartTick();
+            int pullEnd = getPullMotionEndTick();
+            int pullDuration = Math.max(1, pullEnd - pullStart);
+            peak = Math.max(peak, satelliteGammaPulseAfter(frameTick, smoothTickAt(pullStart, pullDuration, 1)));
+            peak = Math.max(peak, satelliteGammaPulseAfter(frameTick, smoothTickAt(pullStart, pullDuration, 2)));
+            peak = Math.max(peak, satelliteGammaPulseAfter(frameTick, pullEnd));
+        } else {
+            peak = Math.max(peak, satelliteGammaPulseAfter(frameTick, getPullStageTick(0)));
+            peak = Math.max(peak, satelliteGammaPulseAfter(frameTick, getPullStageTick(1)));
+            peak = Math.max(peak, satelliteGammaPulseAfter(frameTick, getPullStageTick(2)));
+        }
+
+        if (smoothIn) {
+            int pushStart = getPushMotionStartTick();
+            int pushEnd = getEnterHoldStartTick();
+            int pushDuration = Math.max(1, pushEnd - pushStart);
+            peak = Math.max(peak, satelliteGammaPulseAfter(frameTick, smoothTickAt(pushStart, pushDuration, 1)));
+            peak = Math.max(peak, satelliteGammaPulseAfter(frameTick, smoothTickAt(pushStart, pushDuration, 2)));
+            peak = Math.max(peak, satelliteGammaPulseAfter(frameTick, pushEnd) * 1.15F);
+        } else {
+            peak = Math.max(peak, satelliteGammaPulseAfter(frameTick, getPushStageTick(1)));
+            peak = Math.max(peak, satelliteGammaPulseAfter(frameTick, getPushStageTick(2)));
+            peak = Math.max(peak, satelliteGammaPulseAfter(frameTick, getEnterHoldStartTick()) * 1.15F);
+        }
+
         return Mth.clamp(peak, 0.0F, 1.0F);
     }
 
@@ -918,6 +941,10 @@ public final class TeleportTransitionController {
     }
 
     private static double pullAltitude(float frameTick) {
+        if (GtaLikeTeleportConfig.isSmoothZoomOutEnabled(getStartZoomDimension())) {
+            return smoothPullAltitude(frameTick);
+        }
+
         int firstStage = getPullStageTick(0);
         int secondStage = getPullStageTick(1);
         int thirdStage = getPullStageTick(2);
@@ -934,6 +961,10 @@ public final class TeleportTransitionController {
     }
 
     private static double pushAltitude(float frameTick) {
+        if (GtaLikeTeleportConfig.isSmoothZoomInEnabled(getCurrentZoomDimension())) {
+            return smoothPushAltitude(frameTick);
+        }
+
         int pushMotionStart = getPushMotionStartTick();
         int firstStage = getPushStageTick(1);
         int secondStage = getPushStageTick(2);
@@ -947,6 +978,32 @@ public final class TeleportTransitionController {
         }
 
         return arrivingAltitude(getZoomInStageAltitude(0), frameTick, secondStage, pushEnd);
+    }
+
+    private static double smoothPullAltitude(float frameTick) {
+        int pullStart = getPullStartTick();
+        int pullEnd = getPullMotionEndTick();
+        float progress = Mth.clamp((frameTick - pullStart) / Math.max(1.0F, pullEnd - pullStart), 0.0F, 1.0F);
+        double fromHeight = getBodyCameraHeight();
+        double toHeight = getStartTravelAltitude();
+        return fromHeight + (toHeight - fromHeight) * smoothBlend(progress);
+    }
+
+    private static double smoothPushAltitude(float frameTick) {
+        int pushStart = getPushMotionStartTick();
+        int pushEnd = getEnterHoldStartTick();
+        float progress = Mth.clamp((frameTick - pushStart) / Math.max(1.0F, pushEnd - pushStart), 0.0F, 1.0F);
+        double fromHeight = getTargetTravelAltitude();
+        double toHeight = getBodyCameraHeight();
+        return toHeight + (fromHeight - toHeight) * (1.0F - smoothBlend(progress));
+    }
+
+    private static float smoothBlend(float progress) {
+        return easeOutCubic(progress) * 0.85F + progress * 0.15F;
+    }
+
+    private static int smoothTickAt(int start, int duration, int step) {
+        return start + duration * step / 3;
     }
 
     private static double departingAltitude(double altitude, float frameTick, int startTick, int endTick) {
@@ -1047,6 +1104,13 @@ public final class TeleportTransitionController {
     }
 
     private static boolean isCameraStepSoundTick(int tick) {
+        boolean smoothOut = GtaLikeTeleportConfig.isSmoothZoomOutEnabled(getStartZoomDimension());
+        boolean smoothIn = GtaLikeTeleportConfig.isSmoothZoomInEnabled(getCurrentZoomDimension());
+
+        if (smoothOut && smoothIn) {
+            return isSmoothCameraStepSoundTick(tick);
+        }
+
         int firstPullStep = getPullStageTick(0);
         int secondPullStep = getPullStageTick(1);
         int thirdPullStep = getPullStageTick(2);
@@ -1054,12 +1118,55 @@ public final class TeleportTransitionController {
         int secondPushStep = getPushStageTick(2);
         int thirdPushStep = getEnterHoldStartTick();
 
+        if (smoothOut) {
+            int pullStart = getPullStartTick();
+            int pullEnd = getPullMotionEndTick();
+            int pullDuration = Math.max(1, pullEnd - pullStart);
+            boolean pullStep = tick == smoothTickAt(pullStart, pullDuration, 1)
+                    || tick == smoothTickAt(pullStart, pullDuration, 2)
+                    || tick == pullEnd;
+            return pullStep
+                    || tick == firstPushStep
+                    || tick == secondPushStep
+                    || tick == thirdPushStep;
+        }
+
+        if (smoothIn) {
+            int pushStart = getPushMotionStartTick();
+            int pushEnd = getEnterHoldStartTick();
+            int pushDuration = Math.max(1, pushEnd - pushStart);
+            boolean pushStep = tick == smoothTickAt(pushStart, pushDuration, 1)
+                    || tick == smoothTickAt(pushStart, pushDuration, 2)
+                    || tick == pushEnd;
+            return tick == firstPullStep
+                    || tick == secondPullStep
+                    || tick == thirdPullStep
+                    || pushStep;
+        }
+
         return tick == firstPullStep
                 || tick == secondPullStep
                 || tick == thirdPullStep
                 || tick == firstPushStep
                 || tick == secondPushStep
                 || tick == thirdPushStep;
+    }
+
+    private static boolean isSmoothCameraStepSoundTick(int tick) {
+        int pullStart = getPullStartTick();
+        int pullEnd = getPullMotionEndTick();
+        int pushStart = getPushMotionStartTick();
+        int pushEnd = getEnterHoldStartTick();
+
+        int pullDuration = Math.max(1, pullEnd - pullStart);
+        int pushDuration = Math.max(1, pushEnd - pushStart);
+
+        return tick == smoothTickAt(pullStart, pullDuration, 1)
+                || tick == smoothTickAt(pullStart, pullDuration, 2)
+                || tick == pullEnd
+                || tick == smoothTickAt(pushStart, pushDuration, 1)
+                || tick == smoothTickAt(pushStart, pushDuration, 2)
+                || tick == pushEnd;
     }
 
     private static int getPullStageTick(int stageIndex) {
@@ -1107,20 +1214,25 @@ public final class TeleportTransitionController {
     }
 
     private static SoundEvent getGtaStepSound(int tick) {
+        int pushStart = getPushMotionStartTick();
+
         if (tick == getEnterHoldStartTick()) {
             return TeleportSounds.GTA5_LANDING;
         }
-        if (tick == getPushStageTick(1) || tick == getPushStageTick(2)) {
+        if (tick >= pushStart) {
             return TeleportSounds.GTA5_ZOOM;
         }
         return TeleportSounds.GTA5_DEZOOM;
     }
 
     private static SoundEvent getDefaultModStepSound(int tick) {
-        if (tick == getPullStageTick(2)) {
+        int pullEnd = getPullMotionEndTick();
+        int pushStart = getPushMotionStartTick();
+
+        if (tick == pullEnd) {
             return TeleportSounds.ZOOM_OUT_LONG;
         }
-        if (tick == getPushStageTick(1) || tick == getPushStageTick(2)) {
+        if (tick >= pushStart && tick != getEnterHoldStartTick()) {
             return TeleportSounds.ZOOM_IN_SHORT;
         }
         if (tick == getEnterHoldStartTick()) {

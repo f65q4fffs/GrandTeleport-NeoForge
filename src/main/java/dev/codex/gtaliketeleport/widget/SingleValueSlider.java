@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 
 public final class SingleValueSlider extends AbstractWidget {
     public static final int HEIGHT = 44;
+    private static final int BASE_WIDTH = 368;
     private static final int FRAME_INSET_Y = 2;
     private static final int HANDLE_WIDTH = 7;
     private static final int TRACK_MARGIN = 14;
@@ -161,7 +162,9 @@ public final class SingleValueSlider extends AbstractWidget {
     }
 
     private double getVisualScale() {
-        return Math.max(0.45D, Math.min(4.0D, getHeight() / (double) HEIGHT));
+        double heightScale = getHeight() / (double) HEIGHT;
+        double widthScale = getWidth() / (double) BASE_WIDTH;
+        return Math.max(0.25D, Math.min(1.0D, Math.min(heightScale, widthScale)));
     }
 
     private int getFrameY() {
